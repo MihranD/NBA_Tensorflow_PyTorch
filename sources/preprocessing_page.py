@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 import seaborn as sns
 import numpy as np
+from sources.utils import read_df
 
 def show_preprocessing_page():
   st.write("## Pre-processing and feature engineering")
@@ -37,8 +38,7 @@ def show_preprocessing_page():
   if st.checkbox("Show the big picture of the data to see what kind of dataset we have."):
     show_df_big_picture(df)
 
-  # Distributions of variables
-  if st.checkbox("Show distributions of variables"):
+    # Distributions of variables
     df['Game Date'] = pd.to_datetime(df['Game Date'], format='%Y%m%d')
     min_date = df['Game Date'].min()
     max_date = df['Game Date'].max()
@@ -91,11 +91,6 @@ During the data exploration phase, we are primarily focused on understanding the
 @st.cache_data
 def compute_proportion_of_shots(df):
   return df['Shot Made Flag'].value_counts(normalize=True).head()
-
-@st.cache_data
-def read_df():
-  df = pd.read_csv('NBA Shot Locations 1997 - 2020.csv')
-  return df
 
 # Define the numerical features for outlier detection
 numerical_features = ['Shot Distance', 'X Location', 'Y Location']
