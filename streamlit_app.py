@@ -3,15 +3,32 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sources.introduction_page import show_intro_page
+from sources.preprocessing_page import show_preprocessing_page
+from sources.visualisation_page import show_visualisation_page
+from sources.modelling_page import show_modelling_page
 
 df=pd.read_csv("train.csv")
 
-st.title("Titanic : binary classification project")
+st.title("NBA player shot analysis")
 st.sidebar.title("Table of contents")
-pages=["Exploration", "DataVizualization", "Modelling"]
+pages=["Introduction to the project", "Preprocessing", "Visualizations and Statistics", "Modelling", "a", "b", "c", "d"]
 page=st.sidebar.radio("Go to", pages)
 
+# Context
 if page == pages[0] : 
+  show_intro_page()
+
+if page == pages[1] : 
+  show_preprocessing_page()
+
+if page == pages[2] : 
+  show_visualisation_page()
+
+if page == pages[3] : 
+  show_modelling_page()
+
+if page == pages[4] : 
   st.write("### Presentation of data")
   st.dataframe(df.head(10))
   st.write(df.shape)
@@ -20,11 +37,11 @@ if page == pages[0] :
   if st.checkbox("Show NA") :
     st.dataframe(df.isna().sum())
 
-  #st.write("### Test NBA big file loading")
-  #df1=pd.read_csv("NBA Shot Locations 1997 - 2020.csv")
-  #st.dataframe(df1.head(5))
+  st.write("### Test NBA big file loading")
+  df1=pd.read_csv("NBA Shot Locations 1997 - 2020.csv")
+  st.dataframe(df1.head(5))
 
-if page == pages[1] : 
+if page == pages[5] : 
   st.write("### DataVizualization")
   fig = plt.figure()
   sns.countplot(x = 'Survived', data = df)
@@ -50,7 +67,7 @@ if page == pages[1] :
   fig = sns.lmplot(x='Age', y='Survived', hue="Pclass", data=df)
   st.pyplot(fig)
 
-if page == pages[2] : 
+if page == pages[6] : 
   st.write("### Modelling")
 
   df = df.drop(['PassengerId', 'Name', 'Ticket', 'Cabin'], axis=1)
