@@ -3,12 +3,14 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 import seaborn as sns
 import numpy as np
+import hashlib
 
 def show_preprocessing_page():
   st.write("## Pre-processing and feature engineering")
 
   # Read the dataset into a DataFrame
-  df = read_df()
+  #df = read_df()
+  df = read_df('NBA Shot Locations 1997 - 2020.csv')
 
   # Distributions of variables
   st.write("### Distributions of variables")
@@ -60,10 +62,16 @@ During the data exploration phase, we are primarily focused on understanding the
 def compute_proportion_of_shots(df):
   return df['Shot Made Flag'].value_counts(normalize=True).head()
 
-@st.cache_data
-def read_df():
-  df = pd.read_csv('NBA Shot Locations 1997 - 2020.csv')
-  return df
+#@st.cache_data
+#def read_df():
+#  df = pd.read_csv('NBA Shot Locations 1997 - 2020.csv')
+#  return df
+
+@st.cache_data(hash_funcs={pd.DataFrame: lambda df: hashlib.sha1(df.to_string().encode()).hexdigest()})
+def read_df(file_path):
+    # Read the large CSV file
+    large_df = pd.read_csv(file_path)
+    return large_df
 
 # Define the numerical features for outlier detection
 numerical_features = ['Shot Distance', 'X Location', 'Y Location']
