@@ -3,17 +3,47 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 import seaborn as sns
 import numpy as np
-import hashlib
 
 def show_preprocessing_page():
   st.write("## Pre-processing and feature engineering")
-
+  
   # Read the dataset into a DataFrame
-  #df = read_df()
-  df = read_df('NBA Shot Locations 1997 - 2020.csv')
+  df = read_df()
+
+  # Presentation of data
+  st.write("Display the first few rows of the dataset:")
+  st.dataframe(df.head(10))
+  st.write("Size of the dataset (number of rows and columns):")
+  st.write(df.shape)
+  st.write("---")
+  
+  if st.checkbox("Show the structure of the dataset"):
+    st.dataframe(df.describe())
+  st.write("---")
+  
+  st.markdown("If there are missing values, options are: include imputation, deletion, or using default values depending on the context.")
+  if st.checkbox("Show missing values"):
+    st.dataframe(df.isnull().sum())
+    st.write("We don't have any missing values.")
+  st.write("---")
+
+  st.markdown("If there are duplicated values, we can remove it.")
+  if st.checkbox("Show duplicates"):
+    num_duplicates = df.duplicated().sum()
+    st.write(f"Number of duplicate rows: {num_duplicates}")
+    st.write("We don't have any duplicated values.")
+  st.write("---")
+
+  if st.checkbox("Show the big picture of the data to see what kind of dataset we have."):
+    show_df_big_picture(df)
 
   # Distributions of variables
-  st.write("### Distributions of variables")
+  if st.checkbox("Show distributions of variables"):
+    df['Game Date'] = pd.to_datetime(df['Game Date'], format='%Y%m%d')
+    min_date = df['Game Date'].min()
+    max_date = df['Game Date'].max()
+    st.write(f"Our data looks at the time period from {min_date.year} to {max_date.year}")
+  st.write("---")
 
   # Balanced/imbalanced Dataset
   st.write("### Balanced/imbalanced Dataset")
@@ -62,16 +92,10 @@ During the data exploration phase, we are primarily focused on understanding the
 def compute_proportion_of_shots(df):
   return df['Shot Made Flag'].value_counts(normalize=True).head()
 
-#@st.cache_data
-#def read_df():
-#  df = pd.read_csv('NBA Shot Locations 1997 - 2020.csv')
-#  return df
-
-@st.cache_data(hash_funcs={pd.DataFrame: lambda df: hashlib.sha1(df.to_string().encode()).hexdigest()})
-def read_df(file_path):
-    # Read the large CSV file
-    large_df = pd.read_csv(file_path)
-    return large_df
+@st.cache_data
+def read_df():
+  df = pd.read_csv('NBA Shot Locations 1997 - 2020.csv')
+  return df
 
 # Define the numerical features for outlier detection
 numerical_features = ['Shot Distance', 'X Location', 'Y Location']
@@ -133,3 +157,66 @@ def shot_distance_accuracy(df):
   plt.tight_layout()
   plt.grid(True)
   st.pyplot(fig)
+
+@st.cache_data
+def show_df_big_picture(df):
+  # Create column name as index and data type column
+  data_audit = pd.DataFrame(df.dtypes, columns = ['data_type'])
+  # Create target column, if 0, row is not a target if 1, row is a target
+  data_audit['target'] = 0 
+  data_audit.loc[data_audit.index == 'Shot Made Flag', 'target'] = 1
+  descriptions = [
+  'Unique id assigned to every game',
+  'Unique id assigned to every event within a game',
+  'Unique id assigned to each player',
+  'Shooting Players full name',
+  'Unique id assigned to each team',
+  'The team of the player taking the shot',
+  'The period of the game (out of four); each period is 12 minutes',
+  'Minutes remaining in period (out of 12)',
+  'Seconds remaining in period-minute combination (out of 60)',
+  'Type of shot (ex. Jump Shot, Layup, Hookshot, Dunk, etc)',
+  'Either 2pt or 3pt shot',
+  'General location of shot (ex. Left Corner 3, Mid-range, etc)',
+  'Area/Direction of shot (ex. Center, Left Side, etc)',
+  'Grouping of shots based on range (ex. 8-16ft, 16-24ft, etc)',
+  'Exact distance of shot in feet',
+  'Location of shot as X coordinate',
+  'Location of shot as Y coordinate',
+  '1 (made shot) or 0 (missed shot)',
+  'Date of game',
+  'Team name of the home team',
+  'Team name of the away team',
+  'Regular Season or Playoffs'
+  ]
+  # Create a data description column
+  data_audit['description'] = descriptions
+  # Create a column with missing data in %
+  data_audit['missing_data'] = np.round((df.isna().sum() / len(df)) * 100,2)
+  # Create a type data classifying data into date, categorical or quantitative
+  data_audit.loc[data_audit['data_type'] == 'int64', 'type'] = 'quantitative'
+  data_audit.loc[data_audit['data_type'] == 'object', 'type'] = 'categorical'
+  data_audit.loc[data_audit.index == 'Game Date', 'type'] = 'date'
+  # Create a column which describe categories 
+  periods = f'{sorted(df["Period"].unique())}'
+  shot_types = f'{df["Shot Type"].unique()}'
+  shot_zone_basics = f'{df["Shot Zone Basic"].unique()}'
+  shot_zone_areas = f'{df["Shot Zone Area"].unique()}'
+  shot_zone_ranges = f'{df["Shot Zone Range"].unique()}'
+  season_types = f'{df["Season Type"].unique()}'
+  data_audit.loc[data_audit.index == 'Team Name', 'category'] = "37 teams (ex. Washington Wizards, etc)"
+  data_audit.loc[data_audit.index == 'Period', 'category'] = periods
+  data_audit.loc[data_audit.index == 'Period', 'category'] = periods
+  data_audit.loc[data_audit.index == 'Action Type', 'category'] = "70 types (ex. Jump Shot, Layup, Hookshot, Dunk, etc)"
+  data_audit.loc[data_audit.index == 'Shot Type', 'category'] = shot_types
+  data_audit.loc[data_audit.index == 'Shot Zone Basic', 'category'] = shot_zone_basics
+  data_audit.loc[data_audit.index == 'Shot Zone Area', 'category'] = shot_zone_areas
+  data_audit.loc[data_audit.index == 'Shot Zone Range', 'category'] = shot_zone_ranges
+  data_audit.loc[data_audit.index == 'Home Team', 'category'] = "37 teams (ex. LAL, ATL, etc)"
+  data_audit.loc[data_audit.index == 'Away Team', 'category'] = "37 teams (ex. LAL, ATL, etc)"
+  data_audit.loc[data_audit.index == 'Season Type', 'category'] = season_types
+  data_audit.loc[data_audit.index == 'Shot Made Flag', 'category'] = "[1, 0]"
+  # Create comment column 
+  data_audit.loc[data_audit.index == 'Game Date', 'comment'] = "Should be datetime"
+  # Display data_audit and descriptive statistics 
+  st.write(data_audit)
