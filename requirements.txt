@@ -5,3 +5,5 @@ matplotlib
 seaborn
 scikit-learn
 joblib
+tensorflow
+torch

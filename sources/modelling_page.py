@@ -7,9 +7,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
 
 def show_modelling_page():
-   show_modelling_options()
-
-def show_modelling_options():
   st.write("### Modelling")
 
   # Read the train and test sets from the file 'NBA Shot Locations 1997 - 2020-Report2-train-test.joblib'.

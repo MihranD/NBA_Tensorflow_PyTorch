@@ -8,6 +8,7 @@ from sources.preprocessing_page import show_preprocessing_page
 from sources.visualisation_page import show_visualisation_page
 from sources.preprocessing_for_modelling_page import show_preprocessing_for_modelling_purposes_page
 from sources.modelling_page import show_modelling_page
+from sources.deep_learning_page import show_deep_learning_page
 
 st.title("NBA player shot analysis")
 st.sidebar.title("Table of contents")
@@ -15,7 +16,8 @@ pages=["Introduction to the project",
        "Preprocessing and feature engineering", 
        "Visualizations and Statistics", 
        "Preprocessing for modeling purposes", 
-       "Modelling"]
+       "Base Models",
+       "Deep Learning"]
 page=st.sidebar.radio("Go to", pages)
 
 # Context
@@ -33,3 +35,6 @@ if page == pages[3] :
 
 if page == pages[4] : 
   show_modelling_page()
+
+if page == pages[5] : 
+  show_deep_learning_page()
