@@ -7,6 +7,9 @@ from sklearn.metrics import confusion_matrix
 import torch
 import torch.nn as nn
 import torchvision.models as models
+import joblib
+import os
+import time
 
 class ShotPredictor(nn.Module):
   def __init__(self, input_size):
@@ -31,6 +34,48 @@ class ShotPredictor(nn.Module):
 def show_deep_learning_page():
   st.write("### Deep Learning")
 
+  # Evaluating
+  ACCURACY_CNN_TEST_FILE_PATH = "models/accuracies/accuracy_cnn_test"
+  ACCURACY_CNN_TRAIN_FILE_PATH = "models/accuracies/accuracy_cnn_train"
+  ACCURACY_PYTORCH_TEST_FILE_PATH = "models/accuracies/accuracy_pytorch_test"
+  ACCURACY_PYTORCH_TRAIN_FILE_PATH = "models/accuracies/accuracy_pytorch_train"
+
+  MODEL_CNN = "CNN (LeNet Architecture)"
+  MODEL_PYTORCH = "PyTorch Framework"
+
+  ACCURACY_ON_TEST = "Accuracy on Test set"
+  ACCURACY_ON_TRAIN = "Accuracy on Train set"
+
+  choice = [MODEL_CNN, MODEL_PYTORCH]
+  classifier = st.selectbox('Choice of the model', choice)
+  st.write('The chosen model is :', classifier)
+
+  accuracy_option = st.radio('What do you want to show?', (ACCURACY_ON_TEST, ACCURACY_ON_TRAIN))  
+
+  if classifier == MODEL_CNN:
+    if accuracy_option == ACCURACY_ON_TEST:
+      filename = ACCURACY_CNN_TEST_FILE_PATH
+    elif accuracy_option == ACCURACY_ON_TRAIN:
+      filename = ACCURACY_CNN_TRAIN_FILE_PATH
+  elif classifier == MODEL_PYTORCH:
+    if accuracy_option == ACCURACY_ON_TEST:
+      filename = ACCURACY_PYTORCH_TEST_FILE_PATH
+    elif accuracy_option == ACCURACY_ON_TRAIN:
+      filename = ACCURACY_PYTORCH_TRAIN_FILE_PATH
+
+  # if accuracy already saved, then use it
+  if os.path.exists(filename):
+    # Load accuracy from the joblib file
+    accuracy = joblib.load(filename)
+    if classifier == MODEL_CNN:
+      st.write(accuracy)
+    elif classifier == MODEL_PYTORCH:
+      st.write(accuracy.item())
+    
+    st.write("---")
+    return
+
+  # Accuracy is not calculated yet
   # Read the train and test sets from the file 'NBA Shot Locations 1997 - 2020-Report2-train-test.joblib'.
   X_train, X_test, y_train, y_test = load('NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
 
@@ -74,66 +119,57 @@ def show_deep_learning_page():
   y_train_tensor = torch.FloatTensor(y_train_np).view(-1, 1)
   y_test_tensor = torch.FloatTensor(y_test_np).view(-1, 1)
   # END of Prepare for PyTorch
-    
-  # Evaluating
-  choice = ['CNN (LeNet)', 'PyTorch']
-  option = st.selectbox('Choice of the model', choice)
-  st.write('The chosen model is :', option)
-
-  def prediction(classifier):
-    if classifier == 'CNN (LeNet)':
-      # Load the saved model
-      clf = load_model('models/model_lenet.keras')
-    elif classifier == 'PyTorch':
-      # Load the saved model
-      # Create an instance of our model
-      input_size = X_train_tensor.shape[1]  # Input size is determined by the number of features
-      clf = ShotPredictor(input_size)
-      # Load the saved state dictionary
-      state_dict = torch.load('models/model_pytorch_state_dict.pth')
-      # Load the state dictionary into the model
-      clf.load_state_dict(state_dict)
-    return clf
-
-  def scores(clf, choice, classifier):
-    if classifier == 'CNN (LeNet)':
-      if choice == 'Accuracy on Test set':
-        return accuracy_cnn(clf, X_test_reshaped, y_test)
-      elif choice == 'Accuracy on Train set':
-        return accuracy_cnn(clf, X_train_reshaped, y_train)
-    elif classifier == 'PyTorch':
-      if choice == 'Accuracy on Test set':
-        return accuracy_pytorch(clf, X_test_tensor, y_test_tensor)
-      elif choice == 'Accuracy on Train set':
-        return accuracy_pytorch(clf, X_train_tensor, y_train_tensor)
-    
-  clf = prediction(option)
-  display = st.radio('What do you want to show?', ('Accuracy on Test set', 'Accuracy on Train set'))
-  if display == 'Accuracy on Test set':
-    st.write(scores(clf, display, option))
-  elif display == 'Accuracy on Train set':
-    st.write(scores(clf, display, option))
   
+  def scores(accuracy_option, classifier):
+    if classifier == MODEL_CNN:
+      if accuracy_option == ACCURACY_ON_TEST:
+        return accuracy_cnn(X_test_reshaped, y_test, ACCURACY_CNN_TEST_FILE_PATH)
+      elif accuracy_option == ACCURACY_ON_TRAIN:
+        return accuracy_cnn(X_train_reshaped, y_train, ACCURACY_CNN_TRAIN_FILE_PATH)
+    elif classifier == MODEL_PYTORCH:
+      if accuracy_option == ACCURACY_ON_TEST:
+        return accuracy_pytorch(X_test_tensor, y_test_tensor, X_test_tensor, ACCURACY_PYTORCH_TEST_FILE_PATH)
+      elif accuracy_option == ACCURACY_ON_TRAIN:
+        return accuracy_pytorch(X_train_tensor, y_train_tensor, X_train_tensor, ACCURACY_PYTORCH_TRAIN_FILE_PATH)
+      
+  st.write(scores(accuracy_option, classifier))
   st.write("---")
 
-def accuracy_cnn(clf, X_reshaped, y):
+def accuracy_cnn(X_reshaped, y, joblib_filename):
+  # Load the saved model
+  clf = load_model('models/model_lenet.keras')
+
   # Evaluate the model on test data
   evaluation_results = clf.evaluate(X_reshaped, y)
 
-  # Extract test loss and test accuracy from evaluation_results
-  test_loss = evaluation_results[0]
-  test_accuracy = evaluation_results[1]
+  # Extract test accuracy from evaluation_results
+  # test_loss = evaluation_results[0]
+  accuracy = evaluation_results[1]
+  
+  # Save accuracy to joblib file
+  joblib.dump(accuracy, joblib_filename)
   # Print accuracy
-  st.write(f'Accuracy on test set: {test_accuracy * 100:.2f}%')
-  return test_accuracy
+  #st.write(f'Accuracy on test set: {test_accuracy * 100:.2f}%')
+  return accuracy
 
-def accuracy_pytorch(clf, X_tensor, y_tensor):
+def accuracy_pytorch(X_tensor, y_tensor, X_train_tensor, joblib_filename):
+  # Load the saved model
+  # Create an instance of our model
+  input_size = X_train_tensor.shape[1]  # Input size is determined by the number of features
+  clf = ShotPredictor(input_size)
+  # Load the saved state dictionary
+  state_dict = torch.load('models/model_pytorch_state_dict.pth')
+  # Load the state dictionary into the model
+  clf.load_state_dict(state_dict)
+
   with torch.no_grad():
     clf.eval()  # Set the model to evaluation mode
     test_outputs = clf(X_tensor)  # Get predicted outputs for the test set
     test_outputs = (test_outputs > 0.5).float()  # Convert outputs to binary predictions
     accuracy = (test_outputs == y_tensor).float().mean()  # Calculate accuracy
+    # Save accuracy to joblib file
+    joblib.dump(accuracy, joblib_filename)
     # Print accuracy
-    st.write(f'Accuracy on test set: {accuracy.item()*100:.2f}%')
-    return accuracy
+    #st.write(f'Accuracy on test set: {accuracy.item()*100:.2f}%')
+    return accuracy.item()
     
