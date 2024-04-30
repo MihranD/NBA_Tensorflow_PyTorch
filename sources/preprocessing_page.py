@@ -6,7 +6,7 @@ import numpy as np
 from sources.utils import read_df
 
 def show_preprocessing_page():
-  st.write("## Pre-processing and feature engineering")
+  st.write("### Preprocessing and feature engineering")
   
   # Read the dataset into a DataFrame
   df = read_df()

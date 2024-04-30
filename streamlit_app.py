@@ -6,13 +6,22 @@ import seaborn as sns
 from sources.introduction_page import show_intro_page
 from sources.preprocessing_page import show_preprocessing_page
 from sources.visualisation_page import show_visualisation_page
+from sources.preprocessing_for_modelling_page import show_preprocessing_for_modelling_purposes_page
 from sources.modelling_page import show_modelling_page
 
 df=pd.read_csv("train.csv")
 
 st.title("NBA player shot analysis")
 st.sidebar.title("Table of contents")
-pages=["Introduction to the project", "Preprocessing", "Visualizations and Statistics", "Modelling", "a", "b", "c", "d"]
+pages=["Introduction to the project", 
+       "Preprocessing and feature engineering", 
+       "Visualizations and Statistics", 
+       "Preprocessing for modeling purposes", 
+       "Modelling", 
+       "a", 
+       "b", 
+       "c", 
+       "d"]
 page=st.sidebar.radio("Go to", pages)
 
 # Context
@@ -26,7 +35,7 @@ if page == pages[2] :
   show_visualisation_page()
 
 if page == pages[3] : 
-  show_modelling_page()
+  show_preprocessing_for_modelling_purposes_page()
 
 if page == pages[4] : 
   st.write("### Presentation of data")
