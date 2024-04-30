@@ -230,4 +230,3 @@ def shot_accuracy_by_remaining_seconds(df):
   st.markdown('''
 The graph provides insights into how shot accuracy varies as the game clock winds down. The fluctuations in shot accuracy over different time intervals may reflect various game dynamics, including offensive strategies, defensive pressure, and players' performance under time constraints. The relatively stable shot accuracy observed towards the end of the game (around the last minute) indicates players' ability to maintain composure and execute shots effectively in high-pressure situations. This visualization underscores the significance of time management and decision-making in basketball, as players must navigate the game's final moments with precision to secure favorable outcomes.
               ''')
-  st.write("---")

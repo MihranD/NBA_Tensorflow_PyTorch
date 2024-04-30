@@ -1,42 +1,48 @@
 import streamlit as st
+import pandas as pd
 from sources.utils import read_df
+from joblib import dump, load
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix
 
 def show_modelling_page():
-  st.write("## Modelling")
+   show_modelling_options()
+
+def show_modelling_options():
+  st.write("### Modelling")
+
+  # Read the train and test sets from the file 'NBA Shot Locations 1997 - 2020-Report2-train-test.joblib'.
+  X_train, X_test, y_train, y_test = load('NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
+    
+  choice = ['Logistic Regression', 'Decision Tree', 'Boosting', 'Bagging', 'Random Forest']
+  option = st.selectbox('Choice of the model', choice)
+  st.write('The chosen model is :', option)
+
+  def prediction(classifier):
+    if classifier == 'Logistic Regression':
+      clf = load('models/model_best_lr.joblib')
+    elif classifier == 'Decision Tree':
+      clf = load('models/model_dt.joblib')
+    elif classifier == 'Boosting':
+      clf = load('models/model_boosting.joblib')
+    elif classifier == 'Bagging':
+      clf = load('models/model_best_bagging.joblib')
+    elif classifier == 'Random Forest':
+      clf = load('models/model_best_rf.joblib')
+    return clf
+
+  def scores(clf, choice):
+    if choice == 'Accuracy':
+      return clf.score(X_test, y_test)
+    elif choice == 'Confusion matrix':
+      return confusion_matrix(y_test, clf.predict(X_test))
+    
+  clf = prediction(option)
+  display = st.radio('What do you want to show?', ('Accuracy', 'Confusion matrix'))
+  if display == 'Accuracy':
+    st.write(scores(clf, display))
+  elif display == 'Confusion matrix':
+    st.dataframe(scores(clf, display))
   
-  # Read the dataset into a DataFrame
-  df = read_df()
-
-  # Classification of the problem
-  classification_of_problem(df)
-
-@st.cache_data
-def classification_of_problem(df):
-  st.write("### Classification of the problem")
-
-  st.markdown('''
-1. Type of Machine Learning Problem:
-The machine learning problem in this project is a classification task. Specifically, it involves predicting whether a given NBA shot will be made or missed based on various features related to the shot.
-
-2. Task Related to the Project:
-The project is related to NBA shot analysis, which falls under sports analytics. The specific task is to analyze and predict the outcome of shots taken during NBA games, focusing on whether a shot will result in a successful make or a miss.
-
-3. Main Performance Metric:
-The main performance metric used to compare different machine learning models in this project is accuracy. Accuracy is chosen as the main metric because it provides a straightforward measure of how often the model's predictions are correct out of all predictions made. In the context of NBA shot analysis, accuracy helps evaluate the overall effectiveness of the model in predicting whether a shot will be made or missed.
-
-4. Additional Performance Metrics:
-In addition to accuracy, other quantitative performance metrics are used to evaluate the models' performance comprehensively. These metrics include:
-
-    Precision: It measures the ratio of true positive predictions to the total number of positive predictions. In the context of NBA shot analysis, precision helps assess the model's ability to correctly identify made shots among all shots predicted as made.
-
-    Recall (Sensitivity): It calculates the ratio of true positive predictions to the total number of actual positives. In the NBA shot analysis, recall evaluates the model's capability to capture all made shots, indicating its sensitivity to identifying positive instances (made shots).
-
-    F1 Score: The F1 score is the harmonic mean of precision and recall. It provides a balanced measure of a model's performance, considering both false positives and false negatives. This metric is useful in scenarios where we want to balance precision and recall, such as in the NBA shot analysis task where correctly identifying both made and missed shots is crucial.
-
-    Area Under the ROC Curve (AUC-ROC): This metric evaluates the model's ability to distinguish between classes (made and missed shots) across various threshold values. A higher AUC-ROC value indicates a better-performing model in terms of class separation and predictive power.
-
-    These additional metrics help in gaining a more nuanced understanding of the model's performance beyond just accuracy, taking into account factors like false positives, false negatives, and the balance between precision and recall.
-
-In summary, the NBA shot analysis project involves a classification task where the goal is to predict whether a given shot will be made or missed. The main performance metric used is accuracy, supplemented by other quantitative metrics like precision, recall, F1 score, and AUC-ROC to provide a comprehensive evaluation of the machine learning models employed in the analysis.
-              ''')
   st.write("---")
