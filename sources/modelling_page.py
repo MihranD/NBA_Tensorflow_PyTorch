@@ -1,31 +1,52 @@
 import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
 from joblib import load
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
+from sklearn.metrics import roc_curve, roc_auc_score
+
+# Constant names
+LOGISTIC_REGRESSION = "Logistic Regression"
+DECISION_TREE = "Decision Tree"
+BOOSTING = "Boosting"
+BAGGING = "Bagging"
+RANDOM_FOREST = "Random Forest"
+
+# Read the train and test sets from the file 'NBA Shot Locations 1997 - 2020-Report2-train-test.joblib'.
+X_train, X_test, y_train, y_test = load('NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
 
 def show_modelling_page():
   st.write("### Modelling")
 
-  # Read the train and test sets from the file 'NBA Shot Locations 1997 - 2020-Report2-train-test.joblib'.
-  X_train, X_test, y_train, y_test = load('NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
+  # Show single model parameters
+  show_single_model()
+
+  # Comparison of Accuracies for each Model
+  if st.checkbox("Comparison of Accuracies for each Model"):
+    comparison_of_accurasies()
+    st.write("Random Forest model showed the highest accuracy score for the training and test data sets.")
+  st.write("---")
+
+  # Comparison of ROC Curves for each Model
+  st.write("### ROC Curves")
+  st.markdown('''
+                The ROC curve (for Receiver Operating Characteristic) is the ideal tool to summarize the performance of a binary classifier according to all possible thresholds. It avoids the time-consuming task of predicting classes for different thresholds, and evaluating the confusion matrix for each of these thresholds.
+
+                Graphically, the ROC measure is represented as a curve which gives the true positive rate, the sensitivity, as a function of the false positive rate, the antispecificity ( = 1 - specificity). Each classification threshold value will provide a point on the ROC curve, which will go from (0, 0) to (1, 1).
+
+                The closer the curve is to the (0,1) point (top left), the better the predictions. A model with sensitivity and specificity equal to 1 is considered perfect.
+                ''')
+  if st.checkbox("Comparison of ROC Curves for each Model"):
+    comparison_of_ROC_curves()
     
-  choice = ['Logistic Regression', 'Decision Tree', 'Boosting', 'Bagging', 'Random Forest']
+
+def show_single_model():
+  choice = [LOGISTIC_REGRESSION, DECISION_TREE, BOOSTING, BAGGING, RANDOM_FOREST]
   option = st.selectbox('Choice of the model', choice)
   st.write('The chosen model is :')
 
-  def model(classifier):
-    if classifier == 'Logistic Regression':
-      clf = load('models/model_best_lr.joblib')
-    elif classifier == 'Decision Tree':
-      clf = load('models/model_dt.joblib')
-    elif classifier == 'Boosting':
-      clf = load('models/model_boosting.joblib')
-    elif classifier == 'Bagging':
-      clf = load('models/model_best_bagging.joblib')
-    elif classifier == 'Random Forest':
-      clf = load('models/model_best_rf.joblib')
-    return clf
-  clf = model(option)
+  clf = load_model(option)
   st.write(clf)
 
   def scores(clf, choice):
@@ -43,5 +64,129 @@ def show_modelling_page():
     st.dataframe(scores(clf, display))
   elif display == 'Classification report':
     st.text(scores(clf, display))
-  
-  st.write("---")
+
+
+def comparison_of_accurasies():
+  models = models_dict()
+
+  model_lr = models[LOGISTIC_REGRESSION]
+  model_dt = models[DECISION_TREE]
+  model_boosting = models[BOOSTING]
+  model_bagging = models[BAGGING]
+  model_rf = models[RANDOM_FOREST]
+
+  accuracy_train_lr = model_lr.score(X_train, y_train)
+  accuracy_test_lr = model_lr.score(X_test, y_test)
+
+  accuracy_train_dt = model_dt.score(X_train, y_train)
+  accuracy_test_dt = model_dt.score(X_test, y_test)
+
+  accuracy_train_ac = model_boosting.score(X_train, y_train)
+  accuracy_test_ac = model_boosting.score(X_test, y_test)
+
+  accuracy_train_bagging = model_bagging.score(X_train, y_train)
+  accuracy_test_bagging = model_bagging.score(X_test, y_test)
+
+  accuracy_train_rf = model_rf.score(X_train, y_train)
+  accuracy_test_rf = model_rf.score(X_test, y_test)
+
+  # Sample data (replace with your actual values for each model)
+  train_accuracies = [accuracy_train_lr, accuracy_train_dt, accuracy_train_ac, accuracy_train_bagging, accuracy_train_rf]
+  test_accuracies = [accuracy_test_lr, accuracy_test_dt, accuracy_test_ac, accuracy_test_bagging, accuracy_test_rf]
+
+  # Define colors for train and test bars
+  test_color = '#1f77b4'  # blue
+  train_color = '#ff7f0e'  # orange
+
+  # Define the height of each bar
+  bar_height = 0.35
+
+  # Define the y positions for each model
+  y = np.arange(len(models.keys()))
+
+  # Create a figure with larger size
+  fig, ax = plt.subplots(figsize=(10, 6))  # Adjust the size as needed
+
+  # Plot the bars for test accuracies
+  test_bars = ax.barh(y - bar_height/2, test_accuracies, height=bar_height, color=test_color, label='Test Accuracy')
+
+  # Plot the bars for train accuracies
+  train_bars = ax.barh(y + bar_height/2, train_accuracies, height=bar_height, color=train_color, alpha=0.5, label='Train Accuracy')
+
+  # Set the y-axis ticks and labels
+  ax.set_yticks(y)
+  ax.set_yticklabels(models.keys())  # Use model names as y-axis labels
+
+  # Set the title, labels, and legend
+  ax.set_title('Comparison of Model Accuracies')
+  ax.set_xlabel('Accuracy')
+
+  # Move the legend to the upper left outside the plot area
+  ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+
+  # Set x-axis limits to ensure all bars are visible
+  ax.set_xlim(0, max(max(train_accuracies), max(test_accuracies)) + 0.1)  # Add a buffer for visibility
+
+  # Show grid lines on both axes, set them behind the bars
+  ax.grid(True, linestyle='--', axis='x', zorder=0)
+
+  # Annotate the bars with accuracy values
+  for i, (train_acc, test_acc) in enumerate(zip(train_accuracies, test_accuracies)):
+      ax.text(train_acc + 0.01, i + bar_height/2, f'{train_acc:.5f}', va='center')
+      ax.text(test_acc + 0.01, i - bar_height/2, f'{test_acc:.5f}', va='center')
+
+  # Show the plot
+  plt.tight_layout()  # Adjust layout to prevent overlapping labels
+  st.pyplot(fig)
+
+
+def comparison_of_ROC_curves():
+  models = models_dict()
+
+  # Train and plot ROC curves for each model
+  fig = plt.figure(figsize=(10, 7))
+  for name, m in models.items():
+    y_pred_prob = m.predict_proba(X_test)[:, 1]
+    fpr, tpr, thresholds = roc_curve(y_test, y_pred_prob)
+    auc_score = roc_auc_score(y_test, y_pred_prob)
+    plt.plot(fpr, tpr, label=f"{name} (AUC = {auc_score:.2f})")
+
+  # Plot ROC curve for random guessing (diagonal line)
+  plt.plot([0, 1], [0, 1], linestyle='--', color='black', label='Random Guessing')
+  plt.xlabel('False Positive Rate')
+  plt.ylabel('True Positive Rate')
+  plt.title('Receiver Operating Characteristic (ROC) Curve')
+  plt.legend()
+  plt.grid(True)
+  st.pyplot(fig)
+
+def load_model(classifier):
+  if classifier == LOGISTIC_REGRESSION:
+    clf = load('models/model_best_lr.joblib')
+  elif classifier == DECISION_TREE:
+    clf = load('models/model_dt.joblib')
+  elif classifier == BOOSTING:
+    clf = load('models/model_boosting.joblib')
+  elif classifier == BAGGING:
+    clf = load('models/model_best_bagging.joblib')
+  elif classifier == RANDOM_FOREST:
+    clf = load('models/model_best_rf.joblib')
+  return clf
+
+@st.cache_data
+def models_dict():
+  # Initialize models
+  model_lr = load_model(LOGISTIC_REGRESSION)
+  model_dt = load_model(DECISION_TREE)
+  model_boosting = load_model(BOOSTING)
+  model_bagging = load_model(BAGGING)
+  model_rf = load_model(RANDOM_FOREST)
+
+  models = {
+      LOGISTIC_REGRESSION: model_lr,
+      DECISION_TREE: model_dt,
+      BOOSTING: model_boosting,
+      BAGGING: model_bagging,
+      RANDOM_FOREST: model_rf
+  }
+  return models
