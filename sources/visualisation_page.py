@@ -1,8 +1,6 @@
 import streamlit as st
-import pandas as pd
 import matplotlib.pyplot as plt 
 import seaborn as sns
-import numpy as np
 from sources.utils import read_df
 
 def show_visualisation_page():
