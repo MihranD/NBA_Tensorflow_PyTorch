@@ -3,35 +3,13 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 import seaborn as sns
 import numpy as np
-from joblib import dump, load
+from joblib import dump
 from sklearn.model_selection import train_test_split
 from sources.utils import read_df
 
 def show_preprocessing_for_modelling_purposes_page():
-  st.write("### Preprocessing for modeling purposes")
-  
   # Read the dataset into a DataFrame
   df = read_df()
-
-  # Presentation of data
-  st.markdown('''
-In the previous parts we undertook essential preprocessing steps and conducted exploratory data analysis through visualization techniques. Our focus now shifts towards building machine learning models to gain deeper insights and make predictions based on our dataset. However, before we delve into model development, it's crucial to ensure that our data is adequately prepared. This involves transforming qualitative attributes into quantitative representations, normalizing features, and other necessary preparations to optimize the performance of our models.
-
-In this part, we will carry out these preliminary tasks, laying the groundwork for our subsequent modeling endeavors. By converting qualitative attributes to quantitative ones and applying normalization techniques, we aim to create a clean and standardized dataset that is well-suited for machine learning analysis. 
-
-Our ultimate goal is to generate preprocessed and refined training and testing datasets. These datasets will lay the groundwork for our modeling endeavors, facilitating the smooth progression of building and assessing machine learning models in the subsequent phases of our project.
-              ''')
-  st.write("---")
-
-  # Categorical variable transformation and feature normalization
-  st.write("### Categorical variable transformation and feature normalization")
-  st.markdown('''
-In machine learning and statistical modeling, the quality and format of input data significantly impact the performance and accuracy of predictive models. When working with datasets that contain categorical variables (attributes that represent qualitative characteristics) transforming these variables into numerical representations becomes imperative. Categorical variable transformation enables machine learning algorithms to interpret and analyze these variables effectively, allowing for meaningful insights and accurate predictions.
-
-Furthermore, to ensure fair and optimal treatment of different features during model training, it is essential to normalize numerical features. Feature normalization standardizes the scale of input features, preventing certain variables from dominating the model training process due to their larger magnitude. By scaling features to a common range or distribution, feature normalization promotes stability, convergence, and improved generalization of machine learning models.
-
-In summary, the process of categorical variable transformation and feature normalization is fundamental in preparing datasets for machine learning tasks, ensuring that models can effectively learn from and generalize to new data.
-              ''')
   
   # Transform attributes with high cardinality
   df = transform_attributes_with_high_cardinality(df)
@@ -61,9 +39,6 @@ def conclusion_for_preprocessing(df):
   st.write("We converted all categorical attributes to quantitative. Our dataset ready for further modeling.")
   if st.checkbox("Show preprocessed dataset"):
     st.dataframe(df.dtypes)
-  st.markdown('''
-For now, our focus has been on converting categorical attributes into quantitative representations. We'll defer the scaling process to the appropriate modeling stage, where each model can adopt its own scaling approach (Standardization, MinMax Scaling or other type of scaling) based on its requirements and the characteristics of the data. The current emphasis has been on ensuring that our data is prepared in a format conducive to modeling, with further considerations such as feature scaling left for subsequent stages tailored to each specific model.
-              ''')
   
 # Save train-test sets in a file
 def save_train_test_set(df):
@@ -81,16 +56,9 @@ def save_train_test_set(df):
 # Split train and test parts
 def split_train_and_test_parts(df):
   st.write("#### Split train and test parts")
-  st.write("Let's create a data DataFrame in which we will store the features and create the target ('Shot Made Flag') data variable.")
   st.markdown('''
-In order to test the performance of the classification model, it is necessary to select a part of the data that is dedicated to the evaluation and that is therefore not taken into account in the training of the model.
-To do this, the data must be systematically divided into a training set (X_train and y_train) and a test set (X_test and y_test).
-
-Usually, the test set size is between 15% and 30% of the total amount of data. The choice of the distribution depends mainly on the quantity and quality of the available data. We will choose 20%.
-
 Let's randomly divide the matrices into a training set and a test set corresponding to 80% and 20% of the total amount of available data respectively. Add the argument random_state = 66 for randomness reproducibility.
               ''')
-  st.write("To build a classification model, we need to train our model on the training set only.")
   st.markdown('''
 We intend to store these training and testing sets in a file for later use in modeling tasks. Ensuring consistency, all models will be trained on these identical sets. This approach will provide us with a clearer understanding of each model's performance under the same conditions, aiding in the determination of the most effective model.
               ''')
@@ -169,10 +137,6 @@ def transform_date_attribute(df):
   max_date = df['Game Date'].max()
 
   st.markdown('''
-The approach to handling date features in classification models is generally similar across different types of classifiers, including logistic regression. Date objects cannot be directly used as predictors in classification models, as these models require numerical input features.
-
-Therefore, regardless of the specific classification model we are using, we typically need to perform feature engineering on the date column to extract relevant numerical features.
-
 There are some common approaches to feature engineering with date data in classification models. We will use Extract Components. This approach extracts relevant components from the date, such as year, month, day, day of the week. These components can then be encoded as numerical features.
               ''')
   
@@ -248,10 +212,6 @@ def transform_attributes_with_high_cardinality(df):
   if st.checkbox("Show Action Type values"):
     st.write(df['Action Type'].value_counts())
   
-  st.markdown('''
-Most machine learning algorithms operate with quantitative variables, hence the need to convert these values into numerical representations. With 70 unique action types, employing one-hot encoding would introduce an excessive number of additional columns, which is impractical. As we lack expertise in NBA terminology to group similar action types for discretization or feature engineering, our best option would be to utilize frequency encoding in this scenario. Instead of creating binary indicator variables for each unique action type, we could encode each action type based on its frequency in the dataset. This approach replaces each action type with the proportion of shots that belong to that category. This can be useful if certain action types occur more frequently than others and we want to capture that information in the model.
-              ''')
-  
   st.write("Step 1. Calculate the frequency of each unique action type.")
   action_type_frequency = df['Action Type'].value_counts(normalize = True)
 
@@ -269,10 +229,7 @@ These values represent the proportions of each category in the dataset, where th
 
   # Team Name
   st.write("With the same reason as for 'Action Type', we can do feature encoding for 'Team Name', 'Home Team' and 'Away Team' columns.")
-  st.write("There are", df['Team Name'].nunique(), "Team Name values.")
-  if st.checkbox("Show Team Name values"):
-    st.write(df['Team Name'].value_counts())
-
+  
   # Apply frequency encoding to the 'Team Name' column
   frequency_encode_column(df, 'Team Name')
 
@@ -284,7 +241,6 @@ These values represent the proportions of each category in the dataset, where th
 
   # Drop the original categorical columns
   df.drop(['Team Name', 'Home Team', 'Away Team'], axis = 1, inplace = True)
-  st.write("In our dataset 'Team ID' and 'Team Name' contains exactly the same information, so we can remove 'Team ID' column.")
   return df
 
 # Function to perform frequency encoding
