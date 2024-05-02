@@ -13,7 +13,7 @@ def show_preprocessing_page():
 
   # Presentation of data
   st.write("Display the first few rows of the dataset:")
-  st.dataframe(df.head(10))
+  st.dataframe(df.head())
   st.write("Size of the dataset (number of rows and columns):")
   st.write(df.shape)
   st.write("---")
@@ -42,26 +42,17 @@ def show_preprocessing_page():
     df['Game Date'] = pd.to_datetime(df['Game Date'], format='%Y%m%d')
     min_date = df['Game Date'].min()
     max_date = df['Game Date'].max()
-    st.write(f"Our data looks at the time period from {min_date.year} to {max_date.year}")
+    st.write(f"Our data looks at the time period from {min_date.year} to {max_date.year}.")
   st.write("---")
 
   # Balanced/imbalanced Dataset
-  st.write("### Balanced/imbalanced Dataset")
-  st.markdown('''
-To check if the dataset is balanced in terms of shot made and shot missed instances, we can calculate the proportion of shots made (positive class) versus shots missed (negative class) in the dataset. Let's perform this analysis:
-              ''')
-  if st.checkbox("Proportion of shots made and shots missed") :
-    # Compute and retrieve the cached value counts
-    st.dataframe(compute_proportion_of_shots(df))
-  st.markdown('''
-The dataset displays a proportion of shots made at around 0.45 and shots missed at 0.55, suggesting a slight imbalance in class distribution. However, with a difference of only 0.1 between the two proportions, some may not consider it significantly imbalanced. In instances where the split between classes is close to 50/50, explicit balancing techniques like oversampling or undersampling may not be necessary. Given these considerations, we can interpret the dataset as balanced and proceed accordingly.
-              ''')
+  st.write("#### Balanced/imbalanced Dataset")
+  st.write("Proportion of shots made and shots missed")
+  # Compute and retrieve the cached value counts
+  st.dataframe(compute_proportion_of_shots(df))
 
   # Outliers
   st.write("### Outliers")
-  st.markdown('''
-Identify if there are any outliers in the dataset, especially in numerical features like shot distance, X and Y locations. Outliers might affect the model's performance and need to be handled appropriately, for example, by removing them or transforming them using some techniques.
-              ''')
   if st.checkbox("Show outliers using IQR method"):
     c = st.container()
     show_outlier_plots(df)
@@ -79,12 +70,6 @@ Let's explore shot distance accuracy through visualization.
 The graph above shows something interesting about how accurate NBA players are with their shots. Usually, we expect accuracy to drop as the shot gets farther from the basket. But between 5 to 25 feet away, accuracy stays about the same. There could be a few reasons. Players practice free throws a lot, which are taken from 15 feet away, so they're pretty good at shots from nearby distances. Also, defenders guard differently depending on how close the shooter is to the basket, which might make closer shots harder. But between 5 to 25 feet, these factors seem to balance out. So, even though we might think farther shots are always harder, this graph shows that's not always the case. It gives us a new perspective on how distance affects shooting accuracy.
 
 In terms of outliers, the extreme value observed at the far right end of the graph, with an accuracy of approximately 0.18 points, could be considered an outlier. This is likely a scenario where a player hastily attempts a long-range shot as time expires, resulting in a low success rate. While these shots occasionally find success, they occur infrequently.
-              ''')
-
-  # Normalization and Standardization
-  st.write("### Normalization and Standardization")
-  st.markdown('''
-During the data exploration phase, we are primarily focused on understanding the data distribution, identifying outliers, and gaining insights into feature relationships. We will not perform normalization and standardization during this phase as they can alter the data distribution and make it harder to interpret visualizations. Therefore, we will skip normalization and standardization during data exploration and apply them later during preprocessing, just before training the model.
               ''')
 
 # Define a cached function to compute and cache the value counts

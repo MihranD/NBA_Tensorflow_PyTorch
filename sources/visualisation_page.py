@@ -15,29 +15,20 @@ def show_visualisation_page():
   # Shot Distribution by Zone
   shot_distance_by_zone(df)
 
+  # Shot Accuracy by Shot Zone Range
+  shot_accuracy_by_shot_zone_range(df)
+
   # Shot Type Distribution
   shot_type_distribution(df)
 
   # Shot Type Distribution by Shot Made Flag
   shot_type_distribution_by_shot_made_flag(df)
 
-  # Shot Accuracy by Shot Zone Range
-  shot_accuracy_by_shot_zone_range(df)
-
   # Shooting Efficiency by Period
   shooting_efficiency_by_period(df)
 
-  # Shot Distribution by Team
-  shot_distribution_by_team(df)
-
-  # Shot Accuracy over Seasons
-  shot_accuracy_over_seasons(df)
-
   # Shot Accuracy by Remaining Minutes
   shot_accuracy_by_remaining_minutes(df)
-
-  # Shot Accuracy by Remaining Seconds
-  shot_accuracy_by_remaining_seconds(df)
 
 @st.cache_data
 def shot_distance_by_zone(df):
@@ -114,7 +105,7 @@ def shot_accuracy_by_shot_zone_range(df):
 
   # Plotting countplot with specified order
   fig = plt.figure(figsize = (10, 6))
-  sns.countplot(data = df, x = 'Shot Zone Range', hue = 'Shot Made Flag', palette = 'dark', order = shot_zone_order)
+  sns.countplot(data = df, x = 'Shot Zone Range', hue = 'Shot Made Flag', palette = ['gold', 'lightseagreen'], order = shot_zone_order)
   plt.title('Shot Accuracy by Shot Zone Range')
   plt.xlabel('Shot Zone Range')
   plt.ylabel('Count')
@@ -151,54 +142,6 @@ Overtime-Periods (7-8): Shooting efficiency experiences a sharper decline, with 
   st.write("---")
 
 @st.cache_data
-def shot_distribution_by_team(df):
-  # Shot Distribution by Team
-  # Calculate the count of shots for each team
-  shot_counts_by_team = df['Team Name'].value_counts()
-
-  # Extract the names of the teams sorted by shot counts
-  sorted_teams = shot_counts_by_team.index
-
-  # Create the countplot with the sorted order
-  fig = plt.figure(figsize = (12, 8))
-  sns.countplot(data = df, x = 'Team Name', hue = 'Shot Made Flag', order = sorted_teams, palette = ['gold', 'lightseagreen'])
-  plt.title('Shot Distribution by Team')
-  plt.xlabel('Team Name')
-  plt.ylabel('Number of Shots')
-  plt.xticks(rotation = 90)
-  plt.legend(title = 'Shot Made', loc = 'upper right')
-  plt.grid(True)
-  st.pyplot(fig)
-
-  st.markdown('''
-The shot distribution by team visualization offers insights into the distribution of shots made and missed by NBA teams, showcasing their offensive strategies and efficiency.
-
-Upon analysis, we observe notable variations in shot distributions across different teams. Teams like LAL, SAS, GSW, and DM demonstrate impressive shot distributions, suggesting a well-balanced offensive strategy and efficient shot selection. In contrast, teams such as NOCH, VG, and LAC exhibit comparatively poor shot distributions, hinting at potential inefficiencies or tactical shortcomings in their offensive approach.
-
-The shot distribution by team visualization provides valuable insights into the offensive dynamics and strategic tendencies of NBA teams. Further exploration may involve examining the factors contributing to variations in shot distribution, such as player roles, coaching philosophies, and offensive systems employed by each team.
-              ''')
-  st.write("---")
-
-@st.cache_data
-def shot_accuracy_over_seasons(df):
-  # Shot Accuracy over Seasons
-  fig = plt.figure(figsize = (12, 6))
-  sns.lineplot(data = df, x = 'Game Date', y = 'Shot Made Flag')
-  plt.title('Shot Accuracy over Seasons')
-  plt.xlabel('Game Date')
-  plt.ylabel('Shot Made Flag (Mean)')
-  plt.xticks(rotation = 45)
-  plt.grid(True)
-  st.pyplot(fig)
-
-  st.markdown('''
-The shot accuracy over seasons visualization tracks the trend of shot accuracy throughout the seasons of NBA gameplay. The line plot depicts the mean shot accuracy (proportion of shots made) over time, with the x-axis representing the game dates and the y-axis representing the mean shot made flag.
-
-By monitoring shot accuracy trends over seasons, NBA teams can adapt their training regimens, gameplay strategies, and roster management approaches to enhance performance and achieve sustained success on the court.
-              ''')
-  st.write("---")
-
-@st.cache_data
 def shot_accuracy_by_remaining_minutes(df):
   # Shot Accuracy by Remaining Minutes
   # Create a line plot for remaining minutes
@@ -214,19 +157,3 @@ def shot_accuracy_by_remaining_minutes(df):
 The graph reveals interesting insights into how shot accuracy evolves over the course of the game. The slight fluctuations in shot accuracy during the early minutes may reflect the teams' strategies, adjustments, or warm-up period. As the game progresses, we observe a gradual decline in shot accuracy, possibly due to increased fatigue, defensive pressure, or higher stakes in critical game moments. The narrowing confidence interval towards the end of the game indicates heightened certainty in shot accuracy estimation during crunch time, where players' decisions and execution become more decisive in determining game outcomes. This visualization underscores the importance of time management and strategic decision-making in basketball games, as they can significantly impact shot outcomes and ultimately, game results.
               ''')
   st.write("---")
-
-@st.cache_data
-def shot_accuracy_by_remaining_seconds(df):
-  # Shot Accuracy by Remaining Seconds
-  # Create a line plot for remaining seconds
-  fig = plt.figure(figsize = (12, 6))
-  sns.lineplot(data = df, x = 'Seconds Remaining', y = 'Shot Made Flag', color = 'blue')
-  plt.title('Shot Accuracy by Remaining Seconds')
-  plt.xlabel('Seconds Remaining')
-  plt.ylabel('Shot Made Flag (Mean)')
-  plt.grid(True)
-  st.pyplot(fig)
-
-  st.markdown('''
-The graph provides insights into how shot accuracy varies as the game clock winds down. The fluctuations in shot accuracy over different time intervals may reflect various game dynamics, including offensive strategies, defensive pressure, and players' performance under time constraints. The relatively stable shot accuracy observed towards the end of the game (around the last minute) indicates players' ability to maintain composure and execute shots effectively in high-pressure situations. This visualization underscores the significance of time management and decision-making in basketball, as players must navigate the game's final moments with precision to secure favorable outcomes.
-              ''')
