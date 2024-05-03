@@ -2,6 +2,7 @@ import streamlit as st
 from joblib import load
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from sklearn.metrics import classification_report
 from tensorflow.keras.models import load_model
 import matplotlib.pyplot as plt
 import torch
@@ -106,6 +107,7 @@ Concurrently, the training and test losses consistently decrease, signifying eff
     st.markdown('''
 However, the Mean Absolute Error (MAE) trends show distinctions: while the training MAE steadily decreases, reflecting improved predictions on training data, the test MAE exhibits larger variance, suggesting varying performance on unseen data. This variance indicates the necessity for further robustness analysis and potential investigations into data quality to ensure the model's reliability across diverse scenarios.
                 ''')
+    st.write("---")
 
 def show_single_model():
   st.write("### Deep Learning")
@@ -136,6 +138,22 @@ def show_single_model():
     elif accuracy_option == ACCURACY_ON_TRAIN:
       filename = ACCURACY_PYTORCH_TRAIN_FILE_PATH
 
+  # Initialize the StandardScaler
+  scaler = StandardScaler()
+
+  columns_to_scale = ['Period',
+                      'Minutes Remaining',
+                      'Seconds Remaining', 
+                      'Shot Distance', 
+                      'X Location', 
+                      'Y Location']
+
+  # Scale the features for train set and replace the original columns with the scaled features
+  X_train[columns_to_scale] = scaler.fit_transform(X_train[columns_to_scale])
+
+  # Scale the features for test set and replace the original columns with the scaled features
+  X_test[columns_to_scale] = scaler.fit_transform(X_test[columns_to_scale])
+
   # if accuracy already saved, then use it
   if os.path.exists(filename):
     # Load accuracy from the joblib file
@@ -146,21 +164,6 @@ def show_single_model():
       st.write(accuracy.item())
   else:
     # Accuracy is not saved yet. Let's calculate and save it
-    # Initialize the StandardScaler
-    scaler = StandardScaler()
-
-    columns_to_scale = ['Period',
-                        'Minutes Remaining',
-                        'Seconds Remaining', 
-                        'Shot Distance', 
-                        'X Location', 
-                        'Y Location']
-
-    # Scale the features for train set and replace the original columns with the scaled features
-    X_train[columns_to_scale] = scaler.fit_transform(X_train[columns_to_scale])
-
-    # Scale the features for test set and replace the original columns with the scaled features
-    X_test[columns_to_scale] = scaler.fit_transform(X_test[columns_to_scale])
 
     # Prepare for (CNN LeNet)
     # Apply PCA for dimensionality reduction
@@ -202,19 +205,62 @@ def show_single_model():
     st.write(scores(accuracy_option, classifier))
   # END of else
 
-  if st.checkbox("Show model summary"):
-    show_summary(classifier)
-  st.write("---")
-
   if classifier == MODEL_CNN:
+    # for CNN show classification report
+    classification_report_cnn()
     # for CNN show history graphs
     show_cnn_history()
+
+  if st.checkbox("Show model summary"):
+    show_summary(classifier)
+
+def classification_report_cnn():
+  if st.checkbox("Show classification report"):
+    # Check if the report file exists
+    report_file_path = "models/classification_reports/pca_model_cnn.txt"
+    if os.path.exists(report_file_path):
+      # Load and show the saved report
+      load_and_show_report(report_file_path)
+    else:
+      # Prepare for (CNN LeNet)
+      # Apply PCA for dimensionality reduction
+      pca = PCA(n_components = 20)
+      X_train_pca = pca.fit_transform(X_train)
+      X_test_pca = pca.transform(X_test)
+
+      # Reshape input data for CNN
+      X_train_reshaped = X_train_pca.reshape(-1, 4, 5, 1)  # Adjust based on PCA components
+      X_test_reshaped = X_test_pca.reshape(-1, 4, 5, 1)
+      # END of Prepare for (CNN LeNet)
+
+      # Load the saved model
+      clf = load_model(MODEL_CNN_FILE_PATH)
+
+      # Make predictions
+      y_pred = clf.predict(X_test_reshaped)
+      y_pred_binary = (y_pred > 0.5).astype(int)
+
+      # Generate the classification report
+      report = classification_report(y_test, y_pred_binary)
+
+      # Save the report to a file
+      with open(report_file_path, "w") as file:
+        file.write(report)
+
+      # Show the generated report
+      st.text(report)
+    st.write("---")
+
+def load_and_show_report(report_file_path):
+  # Load the saved classification report from file
+  with open(report_file_path, "r") as file:
+    saved_report = file.read()
+  # Print the saved report
+  st.text(saved_report)
 
 def accuracy_cnn(X_reshaped, y, joblib_filename):
   # Load the saved model
   clf = load_model(MODEL_CNN_FILE_PATH)
-
-  st.write(clf.summary())
 
   # Evaluate the model on test data
   evaluation_results = clf.evaluate(X_reshaped, y)
