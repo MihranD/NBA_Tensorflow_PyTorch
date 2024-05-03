@@ -22,6 +22,18 @@ pages=["Introduction to the project",
        "Conclusion"]
 page=st.sidebar.radio("Go to", pages)
 
+st.sidebar.markdown("---")
+st.sidebar.markdown('''
+    <span style="font-size: 12px; font-family: Arial, sans-serif;">
+        Created by <a href="https://www.linkedin.com/in/mihran-dovlatyan/" target="_blank">Mihran Dovlatyan</a>, 06.05.2024
+    </span>
+''', unsafe_allow_html=True)
+st.sidebar.markdown('''
+    <a href="https://datascientest.com/" target="_blank">
+        <img src="https://datascientest.com/de/wp-content/uploads/sites/8/2022/03/logo-2021-1.png" alt="Logo" style="width: 200px; height: 50px;">
+    </a>
+''', unsafe_allow_html=True)
+
 # Context
 if page == pages[0] : 
   show_intro_page()
