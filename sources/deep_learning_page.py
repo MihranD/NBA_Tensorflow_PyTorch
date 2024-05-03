@@ -3,13 +3,14 @@ from joblib import load
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from tensorflow.keras.models import load_model
-from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torchvision.models as models
 import joblib
 import os
 import sys
+import pickle
 from io import StringIO
 from torchsummary import summary
 
@@ -44,6 +45,69 @@ class ShotPredictor(nn.Module):
     return x
     
 def show_deep_learning_page():
+  # Show single model parameters
+  show_single_model()
+
+def show_cnn_history():
+  # Load saved history
+  if st.checkbox("Display the training history for each epoch"):
+    with open('models/model_lenet_training_history_leaky_relu.pkl', 'rb') as file:
+      history = pickle.load(file)
+
+    # In the variables train_loss and val_loss, store the historical evolution of the loss function at each epoch.
+    train_acc = history["accuracy"]
+    val_acc = history["val_accuracy"]
+
+    train_loss = history["loss"]
+    val_loss = history["val_loss"]
+
+    train_mae = history["mean_absolute_error"]
+    val_mae = history["val_mean_absolute_error"]
+
+    # display the evolution of the cost function and precision as a function of epoch.
+    # plot training and validation accuracy
+    fig = plt.figure(figsize=(16, 8))
+
+    plt.subplot(1, 3, 1)
+    plt.plot(train_acc, label='Training Accuracy')
+    plt.plot(val_acc, label='Validation Accuracy')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    plt.title('Accuracy per Epoch')
+
+    # Plot training and validation loss
+    plt.subplot(1, 3, 2)
+    plt.plot(train_loss, label='Training Loss')
+    plt.plot(val_loss, label='Validation Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.title('Loss per Epoch')
+
+    # Plot training and validation accuracy again (for MAE)
+    plt.subplot(1, 3, 3)
+    plt.plot(train_mae, label='Training MAE')
+    plt.plot(val_mae, label='Validation MAE')
+    plt.xlabel('Epochs')
+    plt.ylabel('Mean Absolute Error')
+    plt.legend()
+    plt.title('Mean Absolute Error (MAE) per Epoch')
+
+    plt.tight_layout()
+    st.pyplot(fig)
+
+    st.markdown('''
+Both training and test accuracies plateau around 0.64, indicating a stable model performance with reasonable generalization, although vigilance is needed to prevent overfitting. 
+                ''')
+    st.markdown('''
+Concurrently, the training and test losses consistently decrease, signifying effective learning and model convergence.
+                ''')
+    st.markdown('''
+However, the Mean Absolute Error (MAE) trends show distinctions: while the training MAE steadily decreases, reflecting improved predictions on training data, the test MAE exhibits larger variance, suggesting varying performance on unseen data. This variance indicates the necessity for further robustness analysis and potential investigations into data quality to ensure the model's reliability across diverse scenarios.
+                ''')
+
+def show_single_model():
   st.write("### Deep Learning")
 
   # Evaluating
@@ -141,6 +205,10 @@ def show_deep_learning_page():
   if st.checkbox("Show model summary"):
     show_summary(classifier)
   st.write("---")
+
+  if classifier == MODEL_CNN:
+    # for CNN show history graphs
+    show_cnn_history()
 
 def accuracy_cnn(X_reshaped, y, joblib_filename):
   # Load the saved model

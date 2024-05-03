@@ -1,6 +1,8 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
+import shap
+import os
 from joblib import load
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
@@ -39,7 +41,69 @@ def show_modelling_page():
                 ''')
   if st.checkbox("Comparison of ROC Curves for each Model"):
     comparison_of_ROC_curves()
+  st.write("---")
+
+  # Interpretation of results  
+  show_SHAP_plots()
+
+def show_SHAP_plots():
+  st.write("### Interpretation of results")
+  st.markdown('''
+We have finished all our models. Let's have a comparative analysis of feature interpretation using SHAP (SHapley Additive exPlanations) values across multiple machine learning models.
+              ''')
+
+  if st.checkbox("**SHAP** results for ***Boosting*** and ***Random Forest***"):
+    # WARNING: This call can take a some hours
+    # percentage = 0.00001    # fast run
+    percentage = 0.01    # 1% of the full dataset, which is about 40k rows
+
+    # Take 1% of the full dataset
+    sample_size = int(len(X_train) * percentage)
+
+    # Take a random sample of the data
+    random_indices = np.random.choice(len(X_train), sample_size, replace=False)
+    X_train_short = X_train.iloc[random_indices]
+    y_train_short = y_train.iloc[random_indices]
+
+     # Read models from files that we created before
+    model_boosting = load_model(BOOSTING)
+    model_rf = load_model(RANDOM_FOREST)
+
+    # Define models and their respective titles
+    models = [
+        (model_boosting, X_train_short, BOOSTING),
+        (model_rf, X_train_short, RANDOM_FOREST)
+    ]
+
+    save_dir = "./models/shap_plots"
+    # Loop through models and generate SHAP summary plots
+    for model, X, title in models:
+      plot_filename = f"{save_dir}/{title}_shap_plot.png"
+
+      # Check if the plot image already exists
+      if os.path.isfile(plot_filename):
+          st.image(plot_filename)
+          st.write("")
+      else:
+        fig = plt.figure(figsize=(10, 7))
+        model.fit(X, y_train_short)
+        background_summary = shap.kmeans(X, 10)  # Adjust the number of clusters as needed
+        explainer = shap.KernelExplainer(model.predict_proba, background_summary)
+        shap_values = explainer(X)
+        shap.summary_plot(shap_values[:, :, 0], X, show=False)
+        plt.title(title)
+        plt.savefig(plot_filename)  # Save each plot to a PNG file
+        plt.close()  # Close the plot to release resources
+        st.pyplot(fig)
     
+    # Add comments
+    st.markdown('''
+The plots reveal that across all models, the most critical features include "Action Type Frequency," "Shot Distance," "Y Location," and "ShotZoneRange_Less Than 8 ft.," which is intuitive given their relevance in basketball dynamics. Certain actions significantly increase the probability of a successful shot, while proximity to the basket strongly influences shot outcomes. 
+
+In the Boosting model, "Y Location" emerges as the third crucial feature, with a substantial impact when considered, despite being overshadowed by the first two features. "Action Type Frequency" and "Shot Distance" consistently influence many predictions, albeit with varying degrees, while "Y Location" has not so much impact on a lot of predictions, but when it has it has a huge impact.  
+
+In contrast, the "Random Forests" model shows relatively equal importance among all features in predicting shot outcomes.
+                ''')
 
 def show_single_model():
   choice = [LOGISTIC_REGRESSION, DECISION_TREE, BOOSTING, BAGGING, RANDOM_FOREST]
