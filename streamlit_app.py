@@ -29,6 +29,10 @@ st.sidebar.markdown('''
     </span>
 ''', unsafe_allow_html=True)
 st.sidebar.markdown('''
+    <span style="font-size: 12px; font-family: Arial, sans-serif;">
+        <a href="https://datascientest.com/en/machine-learning-engineer-course" target="_blank">Machine Learning Engineer course</a> from</span>
+''', unsafe_allow_html=True)
+st.sidebar.markdown('''
     <a href="https://datascientest.com/" target="_blank">
         <img src="https://datascientest.com/de/wp-content/uploads/sites/8/2022/03/logo-2021-1.png" alt="Logo" style="width: 200px; height: 50px;">
     </a>
