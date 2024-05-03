@@ -25,15 +25,15 @@ def show_modelling_page():
   show_single_model()
 
   # Comparison of Accuracies for each Model
-  if st.checkbox("Comparison of Accuracies for each Model"):
+  if st.checkbox("Comparison of **Accuracies** for each Model"):
     comparison_of_accurasies()
-    st.write("Random Forest model showed the highest accuracy score for the training and test data sets.")
+    st.write("**Random Forest** model showed the highest accuracy score for the training and test data sets.")
   st.write("---")
 
   # Comparison of ROC Curves for each Model
   st.write("### ROC Curves")
   st.markdown('''
-                The ROC curve (for Receiver Operating Characteristic) is the ideal tool to summarize the performance of a binary classifier according to all possible thresholds. It avoids the time-consuming task of predicting classes for different thresholds, and evaluating the confusion matrix for each of these thresholds.
+                The **ROC curve** (for Receiver Operating Characteristic) is the ideal tool to summarize the performance of a binary classifier according to all possible thresholds. It avoids the time-consuming task of predicting classes for different thresholds, and evaluating the confusion matrix for each of these thresholds.
 
                 Graphically, the ROC measure is represented as a curve which gives the true positive rate, the sensitivity, as a function of the false positive rate, the antispecificity ( = 1 - specificity). Each classification threshold value will provide a point on the ROC curve, which will go from (0, 0) to (1, 1).
 
@@ -49,7 +49,7 @@ def show_modelling_page():
 def show_SHAP_plots():
   st.write("### Interpretation of results")
   st.markdown('''
-We have finished all our models. Let's have a comparative analysis of feature interpretation using SHAP (SHapley Additive exPlanations) values across multiple machine learning models.
+We have finished all our models. Let's have a comparative analysis of feature interpretation using **SHAP** (SHapley Additive exPlanations) values across multiple machine learning models.
               ''')
 
   if st.checkbox("**SHAP** results for ***Boosting*** and ***Random Forest***"):
@@ -98,11 +98,11 @@ We have finished all our models. Let's have a comparative analysis of feature in
     
     # Add comments
     st.markdown('''
-The plots reveal that across all models, the most critical features include "Action Type Frequency," "Shot Distance," "Y Location," and "ShotZoneRange_Less Than 8 ft.," which is intuitive given their relevance in basketball dynamics. Certain actions significantly increase the probability of a successful shot, while proximity to the basket strongly influences shot outcomes. 
+The plots reveal that across all models, the most critical features include '**Action Type Frequency**', '**Shot Distance**', '**Y Location**', and '**ShotZoneRange_Less Than 8 ft.**', which is intuitive given their relevance in basketball dynamics. Certain actions significantly increase the probability of a successful shot, while proximity to the basket strongly influences shot outcomes. 
 
-In the Boosting model, "Y Location" emerges as the third crucial feature, with a substantial impact when considered, despite being overshadowed by the first two features. "Action Type Frequency" and "Shot Distance" consistently influence many predictions, albeit with varying degrees, while "Y Location" has not so much impact on a lot of predictions, but when it has it has a huge impact.  
+In the Boosting model, '**Y Location**' emerges as the third crucial feature, with a substantial impact when considered, despite being overshadowed by the first two features. '**Action Type Frequency**' and '**Shot Distance**' consistently influence many predictions, albeit with varying degrees, while '**Y Location**' has not so much impact on a lot of predictions, but when it has it has a huge impact.  
 
-In contrast, the "Random Forests" model shows relatively equal importance among all features in predicting shot outcomes.
+In contrast, the **Random Forest** model shows relatively equal importance among all features in predicting shot outcomes.
                 ''')
 
 def show_single_model():

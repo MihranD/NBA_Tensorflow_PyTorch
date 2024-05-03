@@ -44,7 +44,7 @@ def shot_distance_by_zone(df):
   st.markdown('''
 This count plot displays the distribution of both made and missed shots for each shot zone basic. The bars grouped by shot outcome (made or missed), with different colors representing each outcome. This visualization provides a clear comparison between the number of made and missed shots in each shot zone basic.
 
-The shot accuracy in the Restricted Area stands out as notably higher when compared to other areas.
+The shot accuracy in the **Restricted Area** stands out as notably higher when compared to other areas.
               ''')
   st.markdown('''
 This graph shows something interesting about how accurate NBA players are with their shots. Usually, we expect accuracy to drop as the shot gets farther from the basket. But between 5 to 25 feet away, accuracy stays about the same. There could be a few reasons. Players practice free throws a lot, which are taken from 15 feet away, so they're pretty good at shots from nearby distances. Also, defenders guard differently depending on how close the shooter is to the basket, which might make closer shots harder. But between 5 to 25 feet, these factors seem to balance out.

@@ -57,7 +57,7 @@ def save_train_test_set(df):
 def split_train_and_test_parts(df):
   st.write("#### Split train and test parts")
   st.markdown('''
-Let's randomly divide the matrices into a training set and a test set corresponding to 80% and 20% of the total amount of available data respectively. Add the argument random_state = 66 for randomness reproducibility.
+Let's randomly divide the matrices into a **training set** and a **test set** corresponding to **80%** and **20%** of the total amount of available data respectively. Add the argument **random_state = 66** for randomness reproducibility.
               ''')
   st.markdown('''
 We intend to store these training and testing sets in a file for later use in modeling tasks. Ensuring consistency, all models will be trained on these identical sets. This approach will provide us with a clearer understanding of each model's performance under the same conditions, aiding in the determination of the most effective model.
@@ -76,7 +76,7 @@ def target_correlation(corr_matrix):
 # Show Correlation matrix
 def show_correlation_matrix(df):
   st.write("#### Correlation matrix")
-  st.write("Now that we have transformed all features into numeric values, we can proceed to create a correlation matrix specifically for the 'Shot Made Flag' target variable.")
+  st.write("Now that we have transformed all features into numeric values, we can proceed to create a correlation matrix specifically for the '**Shot Made Flag**' target variable.")
 
   # Calculate the correlation matrix
   corr_matrix = correlation_matrix(df)
@@ -103,7 +103,7 @@ The high correlation coefficient of 0.99 between 'ShotType_3PT Field Goal' and '
                 ''')
     st.write("---")
 
-  if st.checkbox("Correlation of Features with 'Shot Made Flag'"):
+  if st.checkbox("Correlation of Features with '**Shot Made Flag**'"):
     features = target_corr.index[1:16].tolist()  # Exclude 'Shot Made Flag' and get the first 15 features
     correlations = target_corr.values[1:16].tolist()  # Exclude its correlation value and get the first 15 correlations
 
@@ -111,14 +111,14 @@ The high correlation coefficient of 0.99 between 'ShotType_3PT Field Goal' and '
     fig = plt.figure(figsize=(10, len(features) * 0.5))  # Adjust figure height based on number of features
     bars = plt.barh(features, correlations, color='skyblue')
     plt.xlabel('Correlation')
-    plt.title('Correlation of Features with "Shot Made Flag" (First 15 Features)')
+    plt.title('Correlation of Features with "**Shot Made Flag**" (First 15 Features)')
     plt.gca().invert_yaxis()  # Invert y-axis to display highest correlation at the top
     plt.grid(True, linestyle='--', alpha=0.6)  # Add grid lines with dashed style and transparency
     plt.tight_layout()  # Adjust spacing to prevent text overlap
     st.pyplot(fig)
 
     st.markdown('''
-The correlation plot highlights the features most strongly correlated with 'Shot Made Flag'.
+The correlation plot highlights the features most strongly correlated with '**Shot Made Flag**'.
 
 'Action Type Frequency' shows a high positive correlation, suggesting that the frequency of specific actions during a shot attempt significantly impacts shot success.
 
@@ -137,7 +137,7 @@ def transform_date_attribute(df):
   max_date = df['Game Date'].max()
 
   st.markdown('''
-There are some common approaches to feature engineering with date data in classification models. We will use Extract Components. This approach extracts relevant components from the date, such as year, month, day, day of the week. These components can then be encoded as numerical features.
+There are some common approaches to feature engineering with date data in classification models. We will use **Extract Components**. This approach extracts relevant components from the date, such as year, month, day, day of the week. These components can then be encoded as numerical features.
               ''')
   
   # Extract components
@@ -150,7 +150,7 @@ There are some common approaches to feature engineering with date data in classi
     st.write(df[['Game Date', 'Year', 'Month', 'Day', 'Day_of_Week']].head())
     st.write("Monday = 0, Sunday = 6")
 
-  st.write("Finally, we remove 'Game Date' column.")
+  st.write("Finally, we remove '**Game Date**' column.")
   df.drop('Game Date', axis = 1, inplace = True)
   return df
 
@@ -158,13 +158,13 @@ There are some common approaches to feature engineering with date data in classi
 @st.cache_data
 def transform_quantitative_attributes(df):
   st.write("#### Transform quantitative attributes, which have unique id values")
-  st.write("In our dataset 'Player ID' and 'Player Name' contains exactly the same information, so we remove 'Player Name' column.")
+  st.write("In our dataset '**Player ID**' and '**Player Name**' contains exactly the same information, so we remove '**Player Name**' column.")
   df.drop(['Player Name'], axis = 1, inplace = True)
 
   st.markdown('''
-Let's investigate 'Game ID', 'Game Event ID', 'Player ID' columns. These contain unique identifiers and lack inherent numerical meaning, it's important to handle them appropriately for machine learning tasks.
+Let's investigate '**Game ID**', '**Game Event ID**', '**Player ID**' columns. These contain **unique identifiers** and lack inherent numerical meaning, it's important to handle them appropriately for machine learning tasks.
 
-Since these unique identifiers are repeated and associated with different instances or records in our dataset, then they can be considered as categorical variables rather than unique identifiers. In this case, we can apply feature encoding techniques to represent these categorical variables numerically.
+Since these unique identifiers are repeated and associated with different instances or records in our dataset, then they can be considered as **categorical** variables rather than unique identifiers. In this case, we can apply **feature encoding** techniques to represent these categorical variables numerically.
 
 Frequency encoding can indeed be applied to our unique identifiers.
               ''')
@@ -186,20 +186,20 @@ Frequency encoding can indeed be applied to our unique identifiers.
 @st.cache_data
 def transform_other_categorical_attributes(df):
   st.write("#### Transform other categorical attributes")
-  st.write("We have some categorical columns that need to be dichotomized. This involves transforming these categorical variables into 'quantitative' variables that can be interpreted by a machine learning model.")
-  st.write("In our dataset 'Shot Type', 'Shot Zone Basic', 'Shot Zone Area', 'Shot Zone Range', 'Season Type' columns contain qualitative values. Let's transform them.")
-  st.write("We will use One Hot Encoding technique to encode a qualitative variable.")
+  st.write("We have some categorical columns that need to be dichotomized. This involves transforming these **categorical variables into quantitative** variables that can be interpreted by a machine learning model.")
+  st.write("In our dataset '**Shot Type**', '**Shot Zone Basic**', '**Shot Zone Area**', '**Shot Zone Range**', '**Season Type**' columns contain **qualitative** values. Let's transform them.")
+  st.write("We will use **One Hot Encoding** technique to encode a qualitative variable.")
   
-  st.write("Step 1. Perform one-hot encoding for each categorical column")
+  st.write("*Step 1*. Perform one-hot encoding for each categorical column")
   shot_type_encoded = pd.get_dummies(df['Shot Type'], prefix = 'ShotType', dtype = int)
   shot_zone_basic_encoded = pd.get_dummies(df['Shot Zone Basic'], prefix = 'ShotZoneBasic', dtype = int)
   shot_zone_area_encoded = pd.get_dummies(df['Shot Zone Area'], prefix = 'ShotZoneArea', dtype = int)
   season_zone_range_encoded = pd.get_dummies(df['Shot Zone Range'], prefix = 'ShotZoneRange', dtype = int)
   season_type_encoded = pd.get_dummies(df['Season Type'], prefix = 'SeasonType', dtype = int)
 
-  st.write("Step 2. Concatenate the one-hot encoded columns with the original DataFrame")
+  st.write("*Step 2*. Concatenate the one-hot encoded columns with the original DataFrame")
   df = pd.concat([df, shot_type_encoded, shot_zone_basic_encoded, shot_zone_area_encoded, season_zone_range_encoded, season_type_encoded], axis=1)
-  st.write("Step 3. Drop the original categorical columns")
+  st.write("*Step 3*. Drop the original categorical columns")
   df.drop(['Shot Type', 'Shot Zone Basic', 'Shot Zone Area', 'Shot Zone Range', 'Season Type'], axis = 1, inplace = True)
   return df
 
@@ -207,28 +207,28 @@ def transform_other_categorical_attributes(df):
 def transform_attributes_with_high_cardinality(df):
   st.write("#### Transform attributes with high cardinality")
   st.write("Convert attributes, which have very large number of unique values.")
-  st.write("There are", df['Action Type'].nunique(), "Action Type values.")
+  st.write("There are", df['Action Type'].nunique(), "**'Action Type'** values.")
 
-  if st.checkbox("Show Action Type values"):
+  if st.checkbox("Show **'Action Type'** values"):
     st.write(df['Action Type'].value_counts())
   
-  st.write("Step 1. Calculate the frequency of each unique action type.")
+  st.write("*Step 1*. Calculate the frequency of each unique action type.")
   action_type_frequency = df['Action Type'].value_counts(normalize = True)
 
-  st.write("Step 2. Replace each action type with its frequency in the dataset.")
+  st.write("*Step 2*. Replace each action type with its frequency in the dataset.")
   df['Action Type Frequency'] = df['Action Type'].map(action_type_frequency)
   df.drop(['Action Type'], axis = 1, inplace = True)
 
-  if st.checkbox("Show Action Type Frequency values"):
+  if st.checkbox("Show **'Action Type Frequency'** values"):
     st.write(df['Action Type Frequency'].value_counts())
 
   st.markdown('''
-These values represent the proportions of each category in the dataset, where the sum of all proportions would be equal to 1. In the context of frequency encoding for machine learning, using normalize=True ensures that each category's encoding represents its relative frequency in the dataset, making it suitable for capturing the distribution of categorical variables in a normalized manner.
+These values represent the proportions of each category in the dataset, where the sum of all proportions would be equal to 1. In the context of **frequency encoding** for machine learning, it ensures that each category's encoding represents its relative frequency in the dataset, making it suitable for capturing the distribution of categorical variables in a normalized manner.
               ''')
   st.write("---")
 
   # Team Name
-  st.write("With the same reason as for 'Action Type', we can do feature encoding for 'Team Name', 'Home Team' and 'Away Team' columns.")
+  st.write("With the same reason as for **'Action Type'**, we can do **feature encoding** for '**Team Name**', '**Home Team**' and '**Away Team**' columns.")
   
   # Apply frequency encoding to the 'Team Name' column
   frequency_encode_column(df, 'Team Name')

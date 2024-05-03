@@ -118,8 +118,8 @@ def show_single_model():
   ACCURACY_PYTORCH_TEST_FILE_PATH = "models/accuracies/accuracy_pytorch_test"
   ACCURACY_PYTORCH_TRAIN_FILE_PATH = "models/accuracies/accuracy_pytorch_train"
 
-  ACCURACY_ON_TEST = "Accuracy on Test set"
-  ACCURACY_ON_TRAIN = "Accuracy on Train set"
+  ACCURACY_ON_TEST = "Accuracy on **Test** set"
+  ACCURACY_ON_TRAIN = "Accuracy on **Train** set"
 
   choice = [MODEL_CNN, MODEL_PYTORCH]
   classifier = st.selectbox('Choice of the model', choice)
@@ -217,7 +217,7 @@ def show_single_model():
 def classification_report_cnn():
   if st.checkbox("Show classification report"):
     # Check if the report file exists
-    report_file_path = "models/classification_reports/pca_model_cnn.txt"
+    report_file_path = "models/classification_reports/classification_report_model_cnn.txt"
     if os.path.exists(report_file_path):
       # Load and show the saved report
       load_and_show_report(report_file_path)
