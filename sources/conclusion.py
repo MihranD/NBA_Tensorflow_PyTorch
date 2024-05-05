@@ -36,16 +36,20 @@ def show_bibliography():
   st.write("#### Bibliography")
 
   st.markdown('''
-[1] Made With ML: https://madewithml.com
+[1] NBA shot dataset between 1997 and 2020: https://www.kaggle.com/jonathangmwl/nba-shot-locations 
               ''')
   st.markdown('''
-[2] A game theoretic approach to explain the output of any machine learning model: https://github.com/shap/shap
+[2] Made With ML: https://madewithml.com
               ''')
   st.markdown('''
-[3] NBA Shot Analysis: https://www.kaggle.com/code/nbuhagiar/nba-shot-analysis
+[3] A game theoretic approach to explain the output of any machine learning model: https://github.com/shap/shap
+              ''')
+  
+  st.markdown('''
+[4] NBA Shot Analysis: https://www.kaggle.com/code/nbuhagiar/nba-shot-analysis
               ''')
   st.markdown('''
-[4] Evaluating the effectiveness of machine learning models for performance forecasting in basketball: https://link.springer.com/article/10.1007/s10115-024-02092-9
+[5] Evaluating the effectiveness of machine learning models for performance forecasting in basketball: https://link.springer.com/article/10.1007/s10115-024-02092-9
               ''')
   st.markdown('''
 The code used throughout this paper can be found here: https://github.com/DataScientest-Studio/feb24_bds_int_nba, https://github.com/MihranD/streamlit
