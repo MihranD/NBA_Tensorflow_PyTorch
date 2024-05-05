@@ -2,7 +2,7 @@
 # 
 # /streamlit_app.py - main python file
 # /requirements.txt - includes all required libs
-# /NBA Shot Locations 1997 - 2020.csv - contains dataset
+# /NBA Shot Locations 1997 - 2020.csv - contains dataset (IMPORTANT: original file you can download from here: https://www.kaggle.com/datasets/jonathangmwl/nba-shot-locations)
 #
 # /sources - includes streamlit python files for each pages
 #   - introduction_page.py - Introduction to the project
@@ -36,6 +36,11 @@
 #   - Boosting_shap_plot.png - Boosing SHAP plot
 #   - Random Forest_shap_plot.png - Random Forest SHAP plot
 
-# To run the project open terminal app, and from 'streamlit' folder run this command:
-# streamlit run streamlit_app.py
-# This will open streamlit app locally in your browser.
+# How to run the app?
+# 1. Open terminal app
+# 2. change directory to 'streamlit' folder 
+# 3. This step is optional: you can replace 'NBA Shot Locations 1997 - 2020.csv' dataset file from here: https://www.kaggle.com/datasets/jonathangmwl/nba-shot-locations
+# 4. run this command:
+#   streamlit run streamlit_app.py
+# 5. Select 'Preprocessing for modeling purposes' page for generating joblib file for train_test_split
+# 6. All pages will work without any problem

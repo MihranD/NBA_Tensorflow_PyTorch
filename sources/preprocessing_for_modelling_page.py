@@ -48,11 +48,11 @@ def save_train_test_set(df):
   X_train, X_test, y_train, y_test = train_test_split(data, target, test_size = 0.2, random_state = 66)
   # WARNING: This call can take a few seconds.
   # Save the data
-  if st.button("Save data in joblib file"):
-    dump((X_train, X_test, y_train, y_test), 'NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
-    st.write("New joblib file generated successfully.")
-    # Later model parts can read the data from it with help of: 
-    # X_train, X_test, y_train, y_test = load('NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
+  #if st.button("Save data in joblib file"):
+  dump((X_train, X_test, y_train, y_test), 'NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
+  st.write("<span style='color:green'>New joblib file generated successfully.</span>", unsafe_allow_html=True)
+  # Later model parts can read the data from it with help of: 
+  # X_train, X_test, y_train, y_test = load('NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
 
 # Split train and test parts
 def split_train_and_test_parts(df):

@@ -15,11 +15,24 @@ BOOSTING = "Boosting"
 BAGGING = "Bagging"
 RANDOM_FOREST = "Random Forest"
 
-# Read the train and test sets from the file 'NBA Shot Locations 1997 - 2020-Report2-train-test.joblib'.
-X_train, X_test, y_train, y_test = load('NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
+class DataHolder:
+  def __init__(self):
+    self.X_train = []
+    self.X_test = []
+    self.y_train = []
+    self.y_test = []
+
+  def load_data(self, filename):
+    # Read the train and test sets from the file 'NBA Shot Locations 1997 - 2020-Report2-train-test.joblib'.
+    self.X_train, self.X_test, self.y_train, self.y_test = load(filename)
+
+# Create an instance of DataHolder
+data_holder = DataHolder()
 
 def show_modelling_page():
   st.write("### Modelling")
+
+  data_holder.load_data('NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
 
   # Show single model parameters
   show_single_model()
@@ -58,12 +71,12 @@ We have finished all our models. Let's have a comparative analysis of feature in
     percentage = 0.01    # 1% of the full dataset, which is about 40k rows
 
     # Take 1% of the full dataset
-    sample_size = int(len(X_train) * percentage)
+    sample_size = int(len(data_holder.X_train) * percentage)
 
     # Take a random sample of the data
-    random_indices = np.random.choice(len(X_train), sample_size, replace=False)
-    X_train_short = X_train.iloc[random_indices]
-    y_train_short = y_train.iloc[random_indices]
+    random_indices = np.random.choice(len(data_holder.X_train), sample_size, replace=False)
+    X_train_short = data_holder.X_train.iloc[random_indices]
+    y_train_short = data_holder.y_train.iloc[random_indices]
 
      # Read models from files that we created before
     model_boosting = load_model(BOOSTING)
@@ -115,13 +128,14 @@ def show_single_model():
 
   def scores(clf, choice):
     if choice == 'Accuracy':
-      return clf.score(X_test, y_test)
+      return clf.score(data_holder.X_test, data_holder.y_test)
     elif choice == 'Confusion matrix':  
-      return confusion_matrix(y_test, clf.predict(X_test))
+      return confusion_matrix(data_holder.y_test, clf.predict(data_holder.X_test))
     elif choice == 'Classification report':
-      return classification_report(y_test, clf.predict(X_test))
+      return classification_report(data_holder.y_test, clf.predict(data_holder.X_test))
   
   display = st.radio('What do you want to show?', ('Accuracy', 'Confusion matrix', 'Classification report'))
+
   if display == 'Accuracy':
     st.write(scores(clf, display))
   elif display == 'Confusion matrix':
@@ -139,20 +153,20 @@ def comparison_of_accurasies():
   model_bagging = models[BAGGING]
   model_rf = models[RANDOM_FOREST]
 
-  accuracy_train_lr = model_lr.score(X_train, y_train)
-  accuracy_test_lr = model_lr.score(X_test, y_test)
+  accuracy_train_lr = model_lr.score(data_holder.X_train, data_holder.y_train)
+  accuracy_test_lr = model_lr.score(data_holder.X_test, data_holder.y_test)
 
-  accuracy_train_dt = model_dt.score(X_train, y_train)
-  accuracy_test_dt = model_dt.score(X_test, y_test)
+  accuracy_train_dt = model_dt.score(data_holder.X_train, data_holder.y_train)
+  accuracy_test_dt = model_dt.score(data_holder.X_test, data_holder.y_test)
 
-  accuracy_train_ac = model_boosting.score(X_train, y_train)
-  accuracy_test_ac = model_boosting.score(X_test, y_test)
+  accuracy_train_ac = model_boosting.score(data_holder.X_train, data_holder.y_train)
+  accuracy_test_ac = model_boosting.score(data_holder.X_test, data_holder.y_test)
 
-  accuracy_train_bagging = model_bagging.score(X_train, y_train)
-  accuracy_test_bagging = model_bagging.score(X_test, y_test)
+  accuracy_train_bagging = model_bagging.score(data_holder.X_train, data_holder.y_train)
+  accuracy_test_bagging = model_bagging.score(data_holder.X_test, data_holder.y_test)
 
-  accuracy_train_rf = model_rf.score(X_train, y_train)
-  accuracy_test_rf = model_rf.score(X_test, y_test)
+  accuracy_train_rf = model_rf.score(data_holder.X_train, data_holder.y_train)
+  accuracy_test_rf = model_rf.score(data_holder.X_test, data_holder.y_test)
 
   # Sample data (replace with your actual values for each model)
   train_accuracies = [accuracy_train_lr, accuracy_train_dt, accuracy_train_ac, accuracy_train_bagging, accuracy_train_rf]
@@ -210,9 +224,9 @@ def comparison_of_ROC_curves():
   # Train and plot ROC curves for each model
   fig = plt.figure(figsize=(10, 7))
   for name, m in models.items():
-    y_pred_prob = m.predict_proba(X_test)[:, 1]
-    fpr, tpr, thresholds = roc_curve(y_test, y_pred_prob)
-    auc_score = roc_auc_score(y_test, y_pred_prob)
+    y_pred_prob = m.predict_proba(data_holder.X_test)[:, 1]
+    fpr, tpr, thresholds = roc_curve(data_holder.y_test, y_pred_prob)
+    auc_score = roc_auc_score(data_holder.y_test, y_pred_prob)
     plt.plot(fpr, tpr, label=f"{name} (AUC = {auc_score:.2f})")
 
   # Plot ROC curve for random guessing (diagonal line)

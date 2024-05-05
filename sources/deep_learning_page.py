@@ -15,15 +15,26 @@ import pickle
 from io import StringIO
 from torchsummary import summary
 
+class DataHolder:
+  def __init__(self):
+    self.X_train = []
+    self.X_test = []
+    self.y_train = []
+    self.y_test = []
+
+  def load_data(self, filename):
+    # Read the train and test sets from the file 'NBA Shot Locations 1997 - 2020-Report2-train-test.joblib'.
+    self.X_train, self.X_test, self.y_train, self.y_test = load(filename)
+
+# Create an instance of DataHolder
+data_holder = DataHolder()
+
 # Constant names
 MODEL_CNN = "CNN (LeNet Architecture)"
 MODEL_PYTORCH = "PyTorch Framework"
 
 MODEL_CNN_FILE_PATH = "models/model_lenet.keras"
 MODEL_PYTORCH_FILE_PATH = "models/model_pytorch_state_dict.pth"
-
-# Read the train and test sets from the file 'NBA Shot Locations 1997 - 2020-Report2-train-test.joblib'.
-X_train, X_test, y_train, y_test = load('NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
 
 class ShotPredictor(nn.Module):
   def __init__(self, input_size):
@@ -46,6 +57,8 @@ class ShotPredictor(nn.Module):
     return x
     
 def show_deep_learning_page():
+  data_holder.load_data('NBA Shot Locations 1997 - 2020-Report2-train-test.joblib')
+
   # Show single model parameters
   show_single_model()
 
@@ -149,10 +162,10 @@ def show_single_model():
                       'Y Location']
 
   # Scale the features for train set and replace the original columns with the scaled features
-  X_train[columns_to_scale] = scaler.fit_transform(X_train[columns_to_scale])
+  data_holder.X_train[columns_to_scale] = scaler.fit_transform(data_holder.X_train[columns_to_scale])
 
   # Scale the features for test set and replace the original columns with the scaled features
-  X_test[columns_to_scale] = scaler.fit_transform(X_test[columns_to_scale])
+  data_holder.X_test[columns_to_scale] = scaler.fit_transform(data_holder.X_test[columns_to_scale])
 
   # if accuracy already saved, then use it
   if os.path.exists(filename):
@@ -168,8 +181,8 @@ def show_single_model():
     # Prepare for (CNN LeNet)
     # Apply PCA for dimensionality reduction
     pca = PCA(n_components = 20)
-    X_train_pca = pca.fit_transform(X_train)
-    X_test_pca = pca.transform(X_test)
+    X_train_pca = pca.fit_transform(data_holder.X_train)
+    X_test_pca = pca.transform(data_holder.X_test)
 
     # Reshape input data for CNN
     X_train_reshaped = X_train_pca.reshape(-1, 4, 5, 1)  # Adjust based on PCA components
@@ -178,10 +191,10 @@ def show_single_model():
 
     # Prepare for PyTorch
     # Convert DataFrame to NumPy arrays
-    X_train_np = X_train.to_numpy()
-    X_test_np = X_test.to_numpy()
-    y_train_np = y_train.to_numpy()
-    y_test_np = y_test.to_numpy()
+    X_train_np = data_holder.X_train.to_numpy()
+    X_test_np = data_holder.X_test.to_numpy()
+    y_train_np = data_holder.y_train.to_numpy()
+    y_test_np = data_holder.y_test.to_numpy()
 
     # Convert data to PyTorch tensors
     X_train_tensor = torch.FloatTensor(X_train_np)
@@ -193,9 +206,9 @@ def show_single_model():
     def scores(accuracy_option, classifier):
       if classifier == MODEL_CNN:
         if accuracy_option == ACCURACY_ON_TEST:
-          return accuracy_cnn(X_test_reshaped, y_test, ACCURACY_CNN_TEST_FILE_PATH)
+          return accuracy_cnn(X_test_reshaped, data_holder.y_test, ACCURACY_CNN_TEST_FILE_PATH)
         elif accuracy_option == ACCURACY_ON_TRAIN:
-          return accuracy_cnn(X_train_reshaped, y_train, ACCURACY_CNN_TRAIN_FILE_PATH)
+          return accuracy_cnn(X_train_reshaped, data_holder.y_train, ACCURACY_CNN_TRAIN_FILE_PATH)
       elif classifier == MODEL_PYTORCH:
         if accuracy_option == ACCURACY_ON_TEST:
           return accuracy_pytorch(X_test_tensor, y_test_tensor, ACCURACY_PYTORCH_TEST_FILE_PATH)
@@ -225,8 +238,8 @@ def classification_report_cnn():
       # Prepare for (CNN LeNet)
       # Apply PCA for dimensionality reduction
       pca = PCA(n_components = 20)
-      X_train_pca = pca.fit_transform(X_train)
-      X_test_pca = pca.transform(X_test)
+      X_train_pca = pca.fit_transform(data_holder.X_train)
+      X_test_pca = pca.transform(data_holder.X_test)
 
       # Reshape input data for CNN
       X_train_reshaped = X_train_pca.reshape(-1, 4, 5, 1)  # Adjust based on PCA components
@@ -241,7 +254,7 @@ def classification_report_cnn():
       y_pred_binary = (y_pred > 0.5).astype(int)
 
       # Generate the classification report
-      report = classification_report(y_test, y_pred_binary)
+      report = classification_report(data_holder.y_test, y_pred_binary)
 
       # Save the report to a file
       with open(report_file_path, "w") as file:
