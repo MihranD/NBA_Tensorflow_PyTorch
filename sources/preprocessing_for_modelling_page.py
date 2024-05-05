@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt 
 import seaborn as sns
-import numpy as np
+import os
 from joblib import dump
 from sklearn.model_selection import train_test_split
 from sources.utils import read_df
@@ -28,7 +28,10 @@ def show_preprocessing_for_modelling_purposes_page():
 
   # Split train and test parts
   split_train_and_test_parts(df)
-  save_train_test_set(df)
+  if os.path.isfile('NBA Shot Locations 1997 - 2020-Report2-train-test.joblib'):
+    st.write("<span style='color:green'>Joblib file already exists.</span>", unsafe_allow_html=True)
+  else:
+    save_train_test_set(df)
 
   # Conclusion for preprocessing
   conclusion_for_preprocessing(df)
