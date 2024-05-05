@@ -120,11 +120,11 @@ The high correlation coefficient of 0.99 between 'ShotType_3PT Field Goal' and '
     st.markdown('''
 The correlation plot highlights the features most strongly correlated with '**Shot Made Flag**'.
 
-'Action Type Frequency' shows a high positive correlation, suggesting that the frequency of specific actions during a shot attempt significantly impacts shot success.
+'**Action Type Frequency**' shows a high positive correlation, suggesting that the frequency of specific actions during a shot attempt significantly impacts shot success.
 
-'ShotZoneBasic_Restricted Area' and 'Shot Distance' also exhibit strong positive correlations, indicating that shots taken from restricted areas and shorter distances are more likely to be made.
+'**ShotZoneBasic_Restricted Area**' and '**Shot Distance**' also exhibit strong positive correlations, indicating that shots taken from restricted areas and shorter distances are more likely to be made.
 
-Furthermore, 'ShotType_2PT Field Goal' and 'ShotType_3PT Field Goal' reflect the influence of shot type on success rates, with both two-point field goals (2PT) and three-point field goals (3PT) having an equal impact on shot success rates.
+Furthermore, '**ShotType_2PT Field Goal**' and '**ShotType_3PT Field Goal**' reflect the influence of shot type on success rates, with both two-point field goals (2PT) and three-point field goals (3PT) having an equal impact on shot success rates.
                 ''')
     st.write("---")
 
@@ -225,7 +225,6 @@ def transform_attributes_with_high_cardinality(df):
   st.markdown('''
 These values represent the proportions of each category in the dataset, where the sum of all proportions would be equal to 1. In the context of **frequency encoding** for machine learning, it ensures that each category's encoding represents its relative frequency in the dataset, making it suitable for capturing the distribution of categorical variables in a normalized manner.
               ''')
-  st.write("---")
 
   # Team Name
   st.write("With the same reason as for **'Action Type'**, we can do **feature encoding** for '**Team Name**', '**Home Team**' and '**Away Team**' columns.")
