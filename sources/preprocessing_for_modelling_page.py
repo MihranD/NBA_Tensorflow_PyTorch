@@ -38,6 +38,7 @@ def conclusion_for_preprocessing(df):
   st.write("#### Conclusion for preprocessing")
   st.write("We converted all categorical attributes to quantitative. Our dataset ready for further modeling.")
   if st.checkbox("Show preprocessed dataset"):
+    st.dataframe(df.head())
     st.dataframe(df.dtypes)
   
 # Save train-test sets in a file
@@ -240,6 +241,9 @@ These values represent the proportions of each category in the dataset, where th
 
   # Drop the original categorical columns
   df.drop(['Team Name', 'Home Team', 'Away Team'], axis = 1, inplace = True)
+
+  # In our dataset 'Team ID' and 'Team Name' contains exactly the same information. Let's remove 'Team ID' column.
+  df.drop(['Team ID'], axis = 1, inplace = True)
   return df
 
 # Function to perform frequency encoding
