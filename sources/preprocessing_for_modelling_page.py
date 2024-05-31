@@ -205,6 +205,17 @@ def transform_other_categorical_attributes(df):
   df = pd.concat([df, shot_type_encoded, shot_zone_basic_encoded, shot_zone_area_encoded, season_zone_range_encoded, season_type_encoded], axis=1)
   st.write("*Step 3*. Drop the original categorical columns")
   df.drop(['Shot Type', 'Shot Zone Basic', 'Shot Zone Area', 'Shot Zone Range', 'Season Type'], axis = 1, inplace = True)
+  # Add 'SeasonType_Playoffs' column before 'SeasonType_Regular Season' if needed (models trained with that order)
+  new_column_name = 'SeasonType_Playoffs'
+  default_value = 0
+  insert_before_column = 'SeasonType_Regular Season'
+  # Check if the column exists, if not, add it
+  if new_column_name not in df.columns:
+    # Find the index of the column before which to insert the new column
+    insert_loc = df.columns.get_loc(insert_before_column)
+    # Insert the new column with the default value
+    df.insert(insert_loc, new_column_name, default_value)
+
   return df
 
 # Transform attributes with high cardinality
