@@ -68,7 +68,7 @@ to manage data processing and create visual insights.
 
 1. Open terminal app
 
-2. Change directory to 'streamlit' folder
+2. Change directory to `streamlit` folder
  
 3. This step is optional: you can replace 'NBA Shot Locations 1997 - 2020.csv' dataset file from here: https://www.kaggle.com/datasets/jonathangmwl/nba-shot-locations
 
@@ -77,4 +77,4 @@ to manage data processing and create visual insights.
 streamlit run streamlit_app.py
 ``` 
 
-5. Select 'Preprocessing for modeling purposes' page for generating joblib file for train_test_split
+5. Select `Preprocessing for modeling purposes` page for generating joblib file for train_test_split
