@@ -163,6 +163,8 @@ Comparative analysis of feature interpretation using SHAP (SHapley Additive exPl
 
 ![SHAP Random Forests](https://github.com/MihranD/nba_ds/blob/main/images/shap-rf.png)
 
+The plots reveal that the most critical features include `Action Type Frequency`, `Shot Distance` and `Y Location`, which is intuitive given their relevance in basketball dynamics.
+
 ## Conclusion
 
 Our main contribution lies in achieving a 64% accuracy in predicting NBA shot success, surpassing existing benchmarks for similar datasets. The accuracy of NBA shot prediction models is influenced by the sport's complexity, data limitations, feature engineering, temporal dynamics, sample size, and evaluation metrics, along with human and random factors in games. Together, these elements impact the model's ability to capture relevant patterns and produce reliable results.
