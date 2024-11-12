@@ -34,7 +34,7 @@ st.sidebar.markdown('''
 ''', unsafe_allow_html=True)
 st.sidebar.markdown('''
     <a href="https://datascientest.com/" target="_blank">
-        <img src="https://datascientest.com/de/wp-content/uploads/sites/8/2022/03/logo-2021-1.png" alt="Logo" style="width: 200px; height: 50px;">
+        <img src="https://db0dce98.rocketcdn.me/wp-content/uploads/2022/03/logo-2021.png" alt="Logo" style="width: 200px; height: 50px;">
     </a>
 ''', unsafe_allow_html=True)
 
