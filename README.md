@@ -83,11 +83,11 @@ We aim to predict the probability of a shot being made by each player, indicatin
 
 In this step, we prepared the dataset for model training by performing essential data pre-processing and feature engineering tasks. Specifically, we:
 
-* Analyzed Dataset Structure: Examined the dataset to understand its schema, data types, and overall structure.
-* Checked for Missing Values and Duplicates: Identified and addressed any missing values and duplicate entries to ensure data integrity.
-* Explored Value Distribution: Assessed the distribution of values across features to understand underlying patterns.
-* Evaluated Class Balance: Checked if the dataset was balanced or imbalanced to determine if additional steps, such as resampling, might be needed.
-* Identified Outliers: Detected outliers to evaluate their impact on the model’s performance and consider if any adjustments were necessary.
+* Analyzed Dataset Structure
+* Checked for Missing Values and Duplicates
+* Explored Value Distribution
+* Evaluated Class Balance
+* Identified Outliers
 
 These steps provided a strong foundation for building a robust model by ensuring data quality and addressing key feature engineering needs.
 
@@ -99,7 +99,7 @@ To gain deeper insights into the dataset, we performed extensive exploratory dat
 
 This count plot displays the distribution of both made and missed shots for each shot zone basic. The bars grouped by shot outcome (made or missed), with different colors representing each outcome. This visualization provides a clear comparison between the number of made and missed shots in each shot zone basic.
 
-![Shot distribution by zone](https://github.com/MihranD/nba_ds/blob/main/images/shot-accuracy-by-remaining-minutes.png)
+![Shot accuracy by remaining minutes](https://github.com/MihranD/nba_ds/blob/main/images/shot-accuracy-by-remaining-minutes.png)
 
 The graph highlights how shot accuracy declines as the game progresses, likely due to fatigue and pressure, with a narrowing confidence interval in the final minutes reflecting heightened certainty in critical shot outcomes. This underscores the impact of time management and strategic decisions on game results.
 
@@ -113,7 +113,7 @@ Before we delve into model development, it’s crucial to ensure that our data i
 
 After transformation all features into numeric values, we can proceed to create a correlation matrix specifically for the `Shot Made Flag` target variable:
 
-![Shot distribution by zone](https://github.com/MihranD/nba_ds/blob/main/images/correlation-heatmap.png)
+![Correlation heatmap](https://github.com/MihranD/nba_ds/blob/main/images/correlation-heatmap.png)
 
 ## Split train and test parts
 
@@ -131,25 +131,43 @@ In the NBA shot analysis project, several machine learning algorithms were exper
 
 ### Comparison of Hyperparameters for each Model
 
-![Shot distribution by zone](https://github.com/MihranD/nba_ds/blob/main/images/comparison-hyperparameters.png)
+![Comparison hyperparameters](https://github.com/MihranD/nba_ds/blob/main/images/comparison-hyperparameters.png)
 
 ### Comparison of Accuracies for each Model
 
-![Shot distribution by zone](https://github.com/MihranD/nba_ds/blob/main/images/comparison-accuracies.png)
+![Comparison accuracies](https://github.com/MihranD/nba_ds/blob/main/images/comparison-accuracies.png)
 
 `Random Forest` model showed the highest accuracy score for the training and test data sets.
 
 ### Comparison of Confusion Matrix for each Model
 
-![Shot distribution by zone](https://github.com/MihranD/nba_ds/blob/main/images/comparison-confusion-matrixes.png)
+![Comparison confusion matrixes](https://github.com/MihranD/nba_ds/blob/main/images/comparison-confusion-matrixes.png)
 
 ### Comparison of ROC Curves for each Model
 
-![Shot distribution by zone](https://github.com/MihranD/nba_ds/blob/main/images/comparison-roc.png)
+![Comparison ROC](https://github.com/MihranD/nba_ds/blob/main/images/comparison-roc.png)
 
 The ROC shows that all models struggle to increase sensitivity without disproportionately increasing specificity. As our goal is to increase recall, this means that these models will further increase false positives significantly. In addition, the AUC shows us that the overall accuracy across all models is similarly.
 
-## Using the App
+## NBA player shot analysis with Deep Learning (CNN, LeNet architecture)
+
+The objective is to implement the foundational LeNet5 Convolutional Neural Network (CNN) architecture in Python using Keras, as it forms the basis for many advanced deep learning models.
+
+![CNN LeNet](https://github.com/MihranD/nba_ds/blob/main/images/cnn-lenet.png)
+
+The fact that the CNN model’s accuracy is around 64% suggests that while convolutional neural networks can offer advantages in certain scenarios, they may not always outperform simpler models on every dataset.
+
+## Interpretation of results
+
+Comparative analysis of feature interpretation using SHAP (SHapley Additive exPlanations) values across multiple machine learning models:
+
+![SHAP Random Forests](https://github.com/MihranD/nba_ds/blob/main/images/shap-rf.png)
+
+## Conclusion
+
+Our main contribution lies in achieving a 64% accuracy in predicting NBA shot success, surpassing existing benchmarks for similar datasets. The accuracy of NBA shot prediction models is influenced by the sport's complexity, data limitations, feature engineering, temporal dynamics, sample size, and evaluation metrics, along with human and random factors in games. Together, these elements impact the model's ability to capture relevant patterns and produce reliable results.
+
+## Using the Streamlit App
 
 1. Open terminal app
 
@@ -163,4 +181,6 @@ streamlit run streamlit_app.py
 ``` 
 
 5. Select `Preprocessing for modeling purposes` page for generating joblib file for train_test_split
+
+5. App should work without any problem.
 
