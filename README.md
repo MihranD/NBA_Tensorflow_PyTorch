@@ -103,6 +103,52 @@ This count plot displays the distribution of both made and missed shots for each
 
 The graph highlights how shot accuracy declines as the game progresses, likely due to fatigue and pressure, with a narrowing confidence interval in the final minutes reflecting heightened certainty in critical shot outcomes. This underscores the impact of time management and strategic decisions on game results.
 
+## Preprocessing NBA player shot dataset for modeling purposes
+
+Before we delve into model development, it’s crucial to ensure that our data is adequately prepared. This involves transforming qualitative attributes into quantitative representations, normalizing features, and other necessary preparations to optimize the performance of our models. Particularly we did:
+* Transform attributes with high cardinality
+* Transform categorical attributes
+* Transform quantitative attributes, which have unique id values
+* Transform date attribute
+
+After transformation all features into numeric values, we can proceed to create a correlation matrix specifically for the `Shot Made Flag` target variable:
+
+![Shot distribution by zone](https://github.com/MihranD/nba_ds/blob/main/images/correlation-heatmap.png)
+
+## Split train and test parts
+
+We randomly divided the matrices into a training set and a test set corresponding to 80% and 20% of the total amount of available data respectively. Added the argument `random_state = 66` for randomness reproducibility.
+
+## NBA player shot analysis with different models
+
+In the NBA shot analysis project, several machine learning algorithms were experimented with to find the most suitable model for predicting shot outcomes. The algorithms tried include:
+* Logistic Regression 
+* Support Vector Machines (SVM) 
+* Random Forests 
+* Boosting 
+* Bagging 
+* Convolutional Neural Networks (CNN)
+
+### Comparison of Hyperparameters for each Model
+
+![Shot distribution by zone](https://github.com/MihranD/nba_ds/blob/main/images/comparison-hyperparameters.png)
+
+### Comparison of Accuracies for each Model
+
+![Shot distribution by zone](https://github.com/MihranD/nba_ds/blob/main/images/comparison-accuracies.png)
+
+`Random Forest` model showed the highest accuracy score for the training and test data sets.
+
+### Comparison of Confusion Matrix for each Model
+
+![Shot distribution by zone](https://github.com/MihranD/nba_ds/blob/main/images/comparison-confusion-matrixes.png)
+
+### Comparison of ROC Curves for each Model
+
+![Shot distribution by zone](https://github.com/MihranD/nba_ds/blob/main/images/comparison-roc.png)
+
+The ROC shows that all models struggle to increase sensitivity without disproportionately increasing specificity. As our goal is to increase recall, this means that these models will further increase false positives significantly. In addition, the AUC shows us that the overall accuracy across all models is similarly.
+
 ## Using the App
 
 1. Open terminal app
