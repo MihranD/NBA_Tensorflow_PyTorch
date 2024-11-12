@@ -186,3 +186,4 @@ streamlit run streamlit_app.py
 
 5. App should work without any problem.
 
+![Streamlit app screenshot](https://github.com/MihranD/nba_ds/blob/main/images/streamlit-app-screenshot.png)
