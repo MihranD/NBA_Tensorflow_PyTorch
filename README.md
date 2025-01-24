@@ -173,7 +173,7 @@ Our main contribution lies in achieving a 64% accuracy in predicting NBA shot su
 
 1. Open terminal app
 
-2. Change directory to `streamlit` folder
+2. Change directory to main project folder
  
 3. This step is optional: you can replace 'NBA Shot Locations 1997 - 2020.csv' dataset file from here: https://www.kaggle.com/datasets/jonathangmwl/nba-shot-locations
 
